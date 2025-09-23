@@ -239,6 +239,7 @@ a:hover { color: var(--gold-2); }
 #markdown-view .view-stats { color: var(--muted); font-size: 0.92rem; margin: 6px 0 10px; }
 .outline-meta { color: var(--muted); font-size: 0.9rem; }
 .views { display: inline-flex; align-items: center; gap: 6px; }
+.hit-badge { height: 16px; vertical-align: middle; }
 
 /* Responsive */
 @media (max-width: 840px) {
