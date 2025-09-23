@@ -1,0 +1,83 @@
+{
+  "outline": [
+    {
+      "group": "Pre Kick-off",
+      "items": [
+        { "id": "0-1", "title": "要件事前確認MTG", "content": "KH gửi yêu cầu sơ bộ, team hỏi để clear", "video": "要件の事前確認" },
+        { "id": "0-2", "title": "見積り説明MTG", "content": "Trình bày estimate, assumption, risk", "video": "見積りの説明" }
+      ]
+    },
+    {
+      "group": "Kick-off & 要件定義",
+      "items": [
+        { "id": "1-1", "title": "キックオフMTG", "content": "Giới thiệu team, scope, mục tiêu", "video": "自己紹介とキックオフ" },
+        { "id": "1-2", "title": "要件ヒアリング", "content": "Hỏi–đáp yêu cầu chi tiết", "video": "要件を聞き取る" },
+        { "id": "1-3", "title": "要件確認／齟齬調整", "content": "Chốt hiểu đúng, xử lý lệch", "video": "認識齟齬の調整" }
+      ]
+    },
+    {
+      "group": "基本設計",
+      "items": [
+        { "id": "2-1", "title": "基本設計レビュー", "content": "Review tài liệu BD", "video": "設計レビュー会話" },
+        { "id": "2-2", "title": "画面設計打ち合わせ", "content": "Confirm UI flow, screen transition", "video": "画面遷移の確認" },
+        { "id": "2-3", "title": "環境確認MTG", "content": "Dev/Test/Prod, CI/CD, quyền", "video": "環境構築の相談" }
+      ]
+    },
+    {
+      "group": "詳細設計",
+      "items": [
+        { "id": "3-1", "title": "詳細設計レビュー", "content": "Review DDD, API仕様, ERD", "video": "詳細設計レビュー" },
+        { "id": "3-2", "title": "非機能要件確認", "content": "性能・監視・セキュリティ", "video": "非機能の確認" },
+        { "id": "3-3", "title": "設計Q&A", "content": "Hỏi đáp edge cases", "video": "設計Q&A" }
+      ]
+    },
+    {
+      "group": "実装／コーディング",
+      "items": [
+        { "id": "4-1", "title": "実装方針確認", "content": "Coding standard, branch, commit", "video": "実装方針の合意" },
+        { "id": "4-2", "title": "技術課題共有", "content": "Vấn đề lib, version, kiến trúc", "video": "技術課題の共有" },
+        { "id": "4-3", "title": "追加要望対応", "content": "Scope change, re-estimate", "video": "追加要望の相談" },
+        { "id": "4-4", "title": "機能デモMTG", "content": "Demo chức năng vừa xong, lấy feedback KH", "video": "機能デモ" }
+      ]
+    },
+    {
+      "group": "テスト (UT/IT)",
+      "items": [
+        { "id": "5-1", "title": "テストケースレビュー", "content": "Confirm test case design", "video": "テストケース確認" },
+        { "id": "5-2", "title": "テスト結果報告", "content": "Báo cáo UT/IT, tỉ lệ pass", "video": "テスト進捗報告" },
+        { "id": "5-3", "title": "不具合報告MTG", "content": "Bug report & fix request", "video": "不具合報告" }
+      ]
+    },
+    {
+      "group": "UAT／受け入れ",
+      "items": [
+        { "id": "6-1", "title": "UAT説明MTG", "content": "Giải thích UAT flow, rule", "video": "受け入れテスト案内" },
+        { "id": "6-2", "title": "UAT不具合対応", "content": "Họp khẩn khi bug nhiều", "video": "UATバグ対応" },
+        { "id": "6-3", "title": "受け入れ判定会議", "content": "Go/No-Go meeting", "video": "リリース可否判断" }
+      ]
+    },
+    {
+      "group": "リリース・運用",
+      "items": [
+        { "id": "7-1", "title": "リリース前最終確認", "content": "Checklist final, rollback plan", "video": "リリース前確認" },
+        { "id": "7-2", "title": "リリース後レビュー", "content": "Post-mortem meeting", "video": "リリース振り返り" },
+        { "id": "7-3", "title": "保守・改善提案MTG", "content": "Đề xuất automation, AI", "video": "改善提案" }
+      ]
+    },
+    {
+      "group": "プロセス系",
+      "items": [
+        { "id": "P-1", "title": "進捗報告MTG（週次）", "content": "Weekly KPI, risk, next", "video": "週次進捗報告" },
+        { "id": "P-2", "title": "定例全体共有", "content": "Regular all-hands update", "video": "定例共有" },
+        { "id": "P-3", "title": "障害対応緊急MTG", "content": "HOTFIX, production bug", "video": "緊急対応会議" }
+      ]
+    },
+    {
+      "group": "面接",
+      "items": [
+        { "id": "I-1", "title": "自己紹介／自己PR", "content": "Background, thế mạnh", "video": "面接の自己紹介" },
+        { "id": "I-2", "title": "経験・スキル説明", "content": "Dự án tiêu biểu, tech skill", "video": "スキル説明" }
+      ]
+    }
+  ]
+}
