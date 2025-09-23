@@ -26,7 +26,7 @@
 
   function parseTitle(md, fallback) {
     const m = md.match(/^\s*#\s+(.+)$/m);
-    return (m ? m[1].trim() : fallback).replace(/\\s+$/, '');
+    return (m ? m[1].trim() : fallback).replace(/\s+$/, '');
   }
 
   // VN toggle state
@@ -69,13 +69,13 @@
       if (m) {
         const name = m[1].trim();
         const jp = m[2].trim();
-        let vn = ';
+        let vn = '';
         if (i + 1 < lines.length) {
           const t = lines[i + 1].match(/^\s*\*(.+)\*\s*$/);
           if (t) { vn = t[1].trim(); i++; }
         }
         if (!inDialog) { out.push('<div class="dialog">'); inDialog = true; }
-        const key = name.toLowerCase().replace(/[^a-z0-9]/g, ');
+        const key = name.toLowerCase().replace(/[^a-z0-9]/g, '');
         let role = 'other';
         if (key.includes('brse')) role = 'brse';
         else if (key === 'kh' || key.includes('client') || key.includes('khach')) role = 'kh';
@@ -89,7 +89,7 @@
           `<div class="dialog-row ${side} role-${role}">`+
             `<div class="bubble">`+
               `<div class="jp" lang="ja">${escapeHtml(jp)}</div>`+
-              (vn ? `<div class="vn" lang="vi">${escapeHtml(vn)}</div>` : ')+
+              (vn ? `<div class="vn" lang="vi">${escapeHtml(vn)}</div>` : '')+
             `</div>`+
           `</div>`
         );
@@ -161,7 +161,7 @@
             if (!it || !it.id) continue;
             const id = String(it.id).trim();
             const topic = it.title || it.topic || id;
-            const content = it.content || it.desc || ';
+            const content = it.content || it.desc || '';
             const path = `data/${id}.md`;
             const views = Number(it.views ?? it.view ?? it.count ?? 0) || 0;
             items.push({ id, topic, path, content, views });
@@ -192,8 +192,8 @@
       const cells = l.split('|').map(c => c.trim());
       if (cells.length < 5) continue;
       const id = cells[1];
-      const group = cells[2] || ';
-      const topic = cells[3] || ';
+      const group = cells[2] || '';
+      const topic = cells[3] || '';
       if (!id || !topic) continue;
       const path = `data/${id}.md`;
       rows.push({ id, group: group || '(Khác)', topic, path });
@@ -226,19 +226,19 @@
         grid.className = 'outline-grid';
         for (const it of g.items) {
           const card = document.createElement('article');
-          card.className = 'outline-card' + (it.available ? ' available' : ');
+          card.className = 'outline-card' + (it.available ? ' available' : '');
           if (it.available) {
             card.innerHTML = `
               <a class="card-link" href="#lesson:${it.path}" aria-label="Mo ${escapeHtml(it.topic)}">
                 <h4 class="outline-title">${escapeHtml(it.topic)}</h4>
-                ${it.content ? `<p class=\"outline-desc\">${escapeHtml(it.content)}</p>` : '}
+                ${it.content ? `<p class=\"outline-desc\">${escapeHtml(it.content)}</p>` : ''}
                 <span class="cta">Mở bài →</span>
               </a>
             `;
           } else {
             card.innerHTML = `
               <h4 class="outline-title">${escapeHtml(it.topic)}</h4>
-              ${it.content ? `<p class=\"outline-desc\">${escapeHtml(it.content)}</p>` : '}
+              ${it.content ? `<p class=\"outline-desc\">${escapeHtml(it.content)}</p>` : ''}
               <span class="badge-draft">Sắp có</span>
             `;
           }
@@ -246,7 +246,7 @@
           try {
             const link = card.querySelector('.card-link');
             if (link) {
-              const id = (it && it.id) ? String(it.id) : String((it && it.path || ').split('/').pop() || ').replace(/\.md$/i, ');
+              const id = (it && it.id) ? String(it.id) : String((it && it.path || '').split('/').pop() || '').replace(/\.md$/i, '');
               try { link.setAttribute('href', `#lesson/${id}`); } catch {}
               const meta = document.createElement('div');
               meta.className = 'outline-meta';
@@ -260,7 +260,7 @@
         section.appendChild(grid);
         frag.appendChild(section);
       }
-      outlineView.innerHTML = ';
+      outlineView.innerHTML = '';
       outlineView.appendChild(frag);
       try { if (window.populateOutlineViewCounts) window.populateOutlineViewCounts(); } catch {}
       return;
@@ -281,7 +281,7 @@
       try {
         const link = card.querySelector('.card-link');
         if (link) {
-          const id = (l.path.split('/').pop() || ').replace(/\.md$/i, ');
+          const id = (l.path.split('/').pop() || '').replace(/\.md$/i, '');
           try { link.setAttribute('href', `#lesson/${id}`); } catch {}
           const meta = document.createElement('div');
           meta.className = 'outline-meta';
@@ -292,7 +292,7 @@
       } catch {}
       grid.appendChild(card);
     }
-    outlineView.innerHTML = ';
+    outlineView.innerHTML = '';
     outlineView.appendChild(grid);
     try { if (window.populateOutlineViewCounts) window.populateOutlineViewCounts(); } catch {}
   }
@@ -316,17 +316,17 @@
       await insertLessonVideo(path);
       // View counter: show cached immediately, update after network
       try {
-        const _id = (path.split('/').pop() || ').replace(/\.md$/i, ');
+        const _id = (path.split('/').pop() || '').replace(/\.md$/i, '');
         const _cached = (window.cachedViewCount ? window.cachedViewCount(_id) : 0);
         renderDetailViewCount(_id, _cached);
         hitViewCount(_id).then(c => { try { renderDetailViewCount(_id, c); } catch {} }).catch(()=>{});
       } catch {}
       const baseName = path.split('/').pop() || 'lesson';
-      document.title = `IT Nihongo Kaiwa — ${baseName.replace(/\.md$/i, ')}`;
+      document.title = `IT Nihongo Kaiwa — ${baseName.replace(/\.md$/i, '')}`;
       // SEO dynamic fallback if helpers available
       try {
         const baseName = path.split('/').pop() || 'lesson';
-        const lessonId = baseName.replace(/\.md$/i, ');
+        const lessonId = baseName.replace(/\.md$/i, '');
         const titleFromMd = (typeof parseTitle === 'function') ? parseTitle(text, lessonId) : lessonId;
         if (typeof setDynamicSEO === 'function' && typeof summarizeText === 'function') {
           setDynamicSEO({
@@ -349,9 +349,9 @@
     const root = markdownView;
     if (!root) return;
     const headings = root.querySelectorAll('h2, h3');
-    const norm = s => (s && s.normalize) ? s.normalize('NFD').replace(/[\u0300-\u036f]/g, ').toLowerCase() : String(s || ').toLowerCase();
+    const norm = s => (s && s.normalize) ? s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : String(s || '').toLowerCase();
     headings.forEach(h => {
-      const t = String(h.textContent || ');
+      const t = String(h.textContent || '');
       const tn = norm(t);
       const isVocab = t.includes('語彙') || tn.includes('tu vung') || tn.includes('tu-vung') || tn.includes('tu_vung');
       const isPhrase = t.includes('フレーズ') || tn.includes('mau cau') || tn.includes('mau-cau') || tn.includes('mau_cau');
@@ -362,7 +362,7 @@
           next.classList.add('vocab-list');
           next.querySelectorAll('li').forEach(li => {
             if (li.dataset.enhanced) return;
-            const raw = (li.textContent || ').trim();
+            const raw = (li.textContent || '').trim();
             const parts = raw.split(/\s[–—-]\s/);
             if (parts.length >= 2) {
               const left = parts.shift();
@@ -392,8 +392,8 @@
     lists.forEach(ul => {
       ul.querySelectorAll('li').forEach(li => {
         if (li.dataset.vrefined === '1') return;
-        const raw = (li.textContent || ').trim();
-        const m = raw.match(/^(.*?)\s*[\-– E�E�]\s*(.+)$/); // allow dash/colon without strict spacing
+        const raw = (li.textContent || '').trim();
+        const m = raw.match(/^(.*?)\s*[\-– E E ]\s*(.+)$/); // allow dash/colon without strict spacing
         if (m) {
           const left = m[1].trim();
           const right = m[2].trim();
@@ -412,7 +412,7 @@
   async function insertLessonVideo(mdPath) {
     try {
       if (!markdownView) return;
-      const base = (mdPath.split('/').pop() || ').replace(/\.md$/i, ');
+      const base = (mdPath.split('/').pop() || '').replace(/\.md$/i, '');
       const candidates = [
         `video/${base}.mp4`,
         `videos/${base}.mp4`,
@@ -451,7 +451,7 @@
   // Map group to class for color + icon choice
     // Map group to class for color + icon choice (ASCII-safe)
   function groupClass(name) {
-    const k = (name || ').toLowerCase();
+    const k = (name || '').toLowerCase();
     if (k.includes('pre')) return 'gi-pre';
     if (k.includes('kick')) return 'gi-kick';
     if (k.includes('basic')) return 'gi-basic';
@@ -500,7 +500,7 @@
   }
 
   function route() {
-    const hash = window.location.hash || ';
+    const hash = window.location.hash || '';
     const pretty = hash.match(/^#lesson\/?([A-Za-z0-9_\-\.]+)/);
     const m = hash.match(/^#lesson:(.+)$/);
     const legacy = hash.match(/^#(.+\.md)$/i);
@@ -554,18 +554,14 @@
   });
 })();
 
-// --- Views counter (hits.sh + cache) ---
+// --- Views counter (CountAPI + local fallback) ---
 (function(){
   window.lessonIdFromPath = function(p){
-    const base = (p || ').split('/').pop() || ';
-    return base.replace(/\.md$/i, ');
+    const base = (p || '').split('/').pop() || '';
+    return base.replace(/\.md$/i, '');
   }
 
-  // hits.sh: count per URL key `${HITS_SITE}/lesson/${id}`
-  const HITS_SITE = (
-    (typeof window !== 'undefined' && window.HITS_SITE) ? window.HITS_SITE :
-    ((location && /\.github\.io$/i.test(location.host)) ? location.host : 'it-nihongo-kaiwa.github.io')
-  ).toLowerCase();
+  const VIEW_NS = 'it-nihongo-kaiwa';
   async function apiJSON(url) {
     const res = await fetch(url, { cache: 'no-cache' });
     if (!res.ok) throw new Error(String(res.status));
@@ -604,7 +600,7 @@
 
   window.summarizeText = function(md, limit){
     try {
-      const t = String(md || ')
+      const t = String(md || '')
         .replace(/`{3}[\s\S]*?`{3}/g, ' ')
         .replace(/`[^`]+`/g, ' ')
         .replace(/^>.*$/gm, ' ')
@@ -614,50 +610,37 @@
         .replace(/\s+/g, ' ')
         .trim();
       return t.length > limit ? t.slice(0, limit - 1) + '…' : t;
-    } catch { return '; }
+    } catch { return ''; }
   }
 
-  // Cache last known server count (per id) for fast-first paint
-  function cacheGet(id){
-    try { const raw = localStorage.getItem('vc_cache::'+id); if (!raw) return null; const o = JSON.parse(raw); if (o && typeof o.v === 'number') return o.v; } catch {}
-    return null;
-  }
-  function cacheSet(id, v){ try { localStorage.setItem('vc_cache::'+id, JSON.stringify({ v, t: Date.now() })); } catch {} }
-
-  function parseHitsSvg(svgText) {
-    try {
-      const s = String(svgText || ');
-      const nums = [...s.matchAll(/>(\d[\d,]*)</g)];
-      if (!nums.length) return null;
-      const last = nums[nums.length - 1][1];
-      return parseInt(last.replace(/,/g, '), 10);
-    } catch { return null; }
-  }
-
-  // Cached value without network (may be null → treated as 0 by callers)
+  // Cached count without waiting for network (seed + local)
   window.cachedViewCount = function(id){
-    const v = cacheGet(id);
-    return typeof v === 'number' ? v : 0;
+    const seed = (window.__seedViews && window.__seedViews[id]) ? Number(window.__seedViews[id]) : 0;
+    return seed + lsGet(id);
   }
 
-    window.getViewCount = async function(id){
+  function lsGet(id){
+    try { return parseInt(localStorage.getItem('vc::'+id) || '0', 10) || 0; } catch { return 0; }
+  }
+  function lsSet(id, v){ try { localStorage.setItem('vc::'+id, String(v)); } catch {} }
+
+  window.getViewCount = async function(id){
     try {
-      const data = await apiGet(id);
-      const val = Number(data && (data.count ?? data.value));
-      if (!Number.isNaN(val)) { cacheSet(id, val); return val; }
+      const data = await apiJSON(`https://api.countapi.xyz/get/${encodeURIComponent(VIEW_NS)}/${encodeURIComponent(id)}`);
+      if (typeof data?.value === 'number') return data.value;
     } catch {}
-    const cv = cacheGet(id);
-    return typeof cv === 'number' ? cv : 0;
+    const seed = (window.__seedViews && window.__seedViews[id]) ? Number(window.__seedViews[id]) : 0;
+    return seed + lsGet(id);
   }
 
   window.hitViewCount = async function(id){
     try {
-      const data = await apiHit(id);
-      const val = Number(data && (data.count ?? data.value));
-      if (!Number.isNaN(val)) { cacheSet(id, val); return val; }
+      const data = await apiJSON(`https://api.countapi.xyz/hit/${encodeURIComponent(VIEW_NS)}/${encodeURIComponent(id)}`);
+      if (typeof data?.value === 'number') { lsSet(id, data.value); return data.value; }
     } catch {}
-    const cv = cacheGet(id);
-    return typeof cv === 'number' ? cv : 0;
+    const v = lsGet(id) + 1; lsSet(id, v);
+    const seed = (window.__seedViews && window.__seedViews[id]) ? Number(window.__seedViews[id]) : 0;
+    return seed + v;
   }
 
   window.renderDetailViewCount = function(id, count){
@@ -666,13 +649,14 @@
     let badge = root.querySelector('.view-stats');
     if (badge) {
       const num = badge.querySelector('.num');
-      if (num && typeof count === 'number') num.textContent = String(count);
+      if (num) num.textContent = String(count);
+      else badge.textContent = `👁 ${count} lượt xem`;
       return;
     }
     const target = root.querySelector('h1');
     badge = document.createElement('div');
     badge.className = 'view-stats';
-    badge.innerHTML = `👁 <span class="num">${typeof count === 'number' ? count : '}</span> lượt xem`;
+    badge.innerHTML = `👁 <span class="num">${count}</span> lượt xem`;
     if (target && target.parentNode) target.insertAdjacentElement('afterend', badge);
     else root.insertBefore(badge, root.firstChild);
   }
@@ -682,26 +666,21 @@
     const tasks = [];
     els.forEach(el => {
       const id = el.getAttribute('data-lesson-id');
+      // Set cached value immediately
       try {
         const cached = window.cachedViewCount ? window.cachedViewCount(id) : 0;
         const num1 = el.querySelector('.num');
         if (num1) num1.textContent = cached; else el.textContent = `👁 ${cached}`;
       } catch {}
+      // Refresh from network in background
       tasks.push(getViewCount(id).then(v => {
         const num2 = el.querySelector('.num');
         if (num2) num2.textContent = v; else el.textContent = `👁 ${v}`;
       }).catch(()=>{}));
     });
     await Promise.allSettled(tasks);
-  }})();
-
-
-
-
-
-
-
-
+  }
+})();
 
 
 
