@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://it-nihongo-kaiwa.github.io/sitemap.xml

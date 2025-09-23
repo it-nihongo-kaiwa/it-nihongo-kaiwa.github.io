@@ -1,4 +1,4 @@
-// IT日本語会話 — static client
+﻿// IT Nihongo Kaiwa — static client
 // - Outline page grouped by data/outline.txt (if present)
 // - Fallback outline from discovered lessons
 // - Detail page renders Markdown with JP/VN bubbles and VN toggle
@@ -48,7 +48,7 @@
     }
   }
 
-  // Markdown preprocessing — dialogues
+  // Markdown preprocessing  Edialogues
   function preprocessMarkdown(src) {
     const lines = src.split(/\r?\n/);
     const out = [];
@@ -163,8 +163,9 @@
             const topic = it.title || it.topic || id;
             const content = it.content || it.desc || '';
             const path = `data/${id}.md`;
-            items.push({ id, topic, path, content });
-            normalized.push({ id, topic, path, group: groupName, content });
+            const views = Number(it.views ?? it.view ?? it.count ?? 0) || 0;
+            items.push({ id, topic, path, content, views });
+            normalized.push({ id, topic, path, group: groupName, content, views });
           }
         }
         // Availability checks
@@ -173,7 +174,7 @@
         const byGroup = new Map();
         for (const r of normalized) {
           if (!byGroup.has(r.group)) byGroup.set(r.group, []);
-          byGroup.get(r.group).push({ id: r.id, topic: r.topic, path: r.path, available: r.available, content: r.content });
+          byGroup.get(r.group).push({ id: r.id, topic: r.topic, path: r.path, available: r.available, content: r.content, views: r.views || 0 });
         }
         return Array.from(byGroup.entries()).map(([group, items]) => ({ group, items }));
       } catch {
@@ -210,7 +211,7 @@
     if (!outlineView) return;
     if (!outlineGroups && lessons.length === 0) {
       const hint = location.protocol === 'file:'
-        ? 'Đang mở trực tiếp file (file://). Hãy dùng máy chủ tĩnh hoặc GitHub Pages để cho phép fetch().' : 'Không tìm thấy nội dung. Thêm md trong data/ hoặc tạo data/lessons.json.';
+        ? 'Đang mềEtrực tiếp file (file://). Hãy dùng máy chủ tĩnh hoặc GitHub Pages đềEcho phép fetch().' : 'Không tìm thấy nội dung. Thêm md trong data/ hoặc tạo data/lessons.json.';
       outlineView.innerHTML = `<p class="loading">${hint}</p>`;
       return;
     }
@@ -228,7 +229,7 @@
           card.className = 'outline-card' + (it.available ? ' available' : '');
           if (it.available) {
             card.innerHTML = `
-              <a class="card-link" href="#lesson:${it.path}" aria-label="Mở ${escapeHtml(it.topic)}">
+              <a class="card-link" href="#lesson:${it.path}" aria-label="Mo ${escapeHtml(it.topic)}">
                 <h4 class="outline-title">${escapeHtml(it.topic)}</h4>
                 ${it.content ? `<p class=\"outline-desc\">${escapeHtml(it.content)}</p>` : ''}
                 <span class="cta">Mở bài →</span>
@@ -241,6 +242,19 @@
               <span class="badge-draft">Sắp có</span>
             `;
           }
+          // Add view badge into available cards (if link exists)
+          try {
+            const link = card.querySelector('.card-link');
+            if (link) {
+              const id = (it && it.id) ? String(it.id) : String((it && it.path || '').split('/').pop() || '').replace(/\.md$/i, '');
+              try { link.setAttribute('href', `#lesson/${id}`); } catch {}
+              const meta = document.createElement('div');
+              meta.className = 'outline-meta';
+              meta.innerHTML = `<span class="views" data-lesson-id="${escapeHtml(id)}">👁 <span class=\"num\">—</span></span>`;
+              const cta = link.querySelector('.cta');
+              if (cta) link.insertBefore(meta, cta); else link.appendChild(meta);
+            }
+          } catch {}
           grid.appendChild(card);
         }
         section.appendChild(grid);
@@ -248,6 +262,7 @@
       }
       outlineView.innerHTML = '';
       outlineView.appendChild(frag);
+      try { if (window.populateOutlineViewCounts) window.populateOutlineViewCounts(); } catch {}
       return;
     }
     // Fallback: discovered lessons flat grid
@@ -262,10 +277,24 @@
           <span class="cta">Mở bài →</span>
         </a>
       `;
+      // Add view badge for discovered lessons
+      try {
+        const link = card.querySelector('.card-link');
+        if (link) {
+          const id = (l.path.split('/').pop() || '').replace(/\.md$/i, '');
+          try { link.setAttribute('href', `#lesson/${id}`); } catch {}
+          const meta = document.createElement('div');
+          meta.className = 'outline-meta';
+          meta.innerHTML = `<span class="views" data-lesson-id="${escapeHtml(id)}">👁 <span class=\"num\">—</span></span>`;
+          const cta = link.querySelector('.cta');
+          if (cta) link.insertBefore(meta, cta); else link.appendChild(meta);
+        }
+      } catch {}
       grid.appendChild(card);
     }
     outlineView.innerHTML = '';
     outlineView.appendChild(grid);
+    try { if (window.populateOutlineViewCounts) window.populateOutlineViewCounts(); } catch {}
   }
 
   async function renderLesson(path) {
@@ -285,29 +314,56 @@
       enhanceLessonContent();
       refineVocabDisplay();
       await insertLessonVideo(path);
+      // View counter: show cached immediately, update after network
+      try {
+        const _id = (path.split('/').pop() || '').replace(/\.md$/i, '');
+        const _cached = (window.cachedViewCount ? window.cachedViewCount(_id) : 0);
+        renderDetailViewCount(_id, _cached);
+        hitViewCount(_id).then(c => { try { renderDetailViewCount(_id, c); } catch {} }).catch(()=>{});
+      } catch {}
       const baseName = path.split('/').pop() || 'lesson';
-      document.title = `IT日本語会話 — ${baseName.replace(/\.md$/i, '')}`;
+      document.title = `IT Nihongo Kaiwa — ${baseName.replace(/\.md$/i, '')}`;
+      // SEO dynamic fallback if helpers available
+      try {
+        const baseName = path.split('/').pop() || 'lesson';
+        const lessonId = baseName.replace(/\.md$/i, '');
+        const titleFromMd = (typeof parseTitle === 'function') ? parseTitle(text, lessonId) : lessonId;
+        if (typeof setDynamicSEO === 'function' && typeof summarizeText === 'function') {
+          setDynamicSEO({
+            title: `IT Nihongo Kaiwa — ${titleFromMd}`,
+            description: summarizeText(text, 160),
+            url: location.origin + location.pathname + `#lesson/${lessonId}`
+          });
+        } else {
+          document.title = `IT Nihongo Kaiwa — ${titleFromMd}`;
+        }
+      } catch {}
     } catch (e) {
-      markdownView.innerHTML = `<blockquote><span class="label vn">Info</span> <span class="vn">Không thể tải: ${escapeHtml(String(e))}</span></blockquote>`;
+      markdownView.innerHTML = `<blockquote><span class="label vn">Info</span> <span class="vn">Khong the tai: ${escapeHtml(String(e))}</span></blockquote>`;
     }
   }
 
   // Enhance sections like Vocabulary / Phrases after Markdown render
+    // Enhance sections like Vocabulary / Phrases after Markdown render
   function enhanceLessonContent() {
     const root = markdownView;
     if (!root) return;
     const headings = root.querySelectorAll('h2, h3');
+    const norm = s => (s && s.normalize) ? s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : String(s || '').toLowerCase();
     headings.forEach(h => {
-      const t = (h.textContent || '').toLowerCase();
-      if (t.includes('語彙') || t.includes('từ vựng')) {
+      const t = String(h.textContent || '');
+      const tn = norm(t);
+      const isVocab = t.includes('語彙') || tn.includes('tu vung') || tn.includes('tu-vung') || tn.includes('tu_vung');
+      const isPhrase = t.includes('フレーズ') || tn.includes('mau cau') || tn.includes('mau-cau') || tn.includes('mau_cau');
+      if (isVocab) {
         h.classList.add('sec-head', 'vocab-head');
         const next = h.nextElementSibling;
         if (next && (next.tagName === 'UL' || next.tagName === 'OL')) {
           next.classList.add('vocab-list');
           next.querySelectorAll('li').forEach(li => {
             if (li.dataset.enhanced) return;
-            const raw = li.textContent.trim();
-            const parts = raw.split(/\s[—–-]\s/); // split on dash-like separator
+            const raw = (li.textContent || '').trim();
+            const parts = raw.split(/\s[–—-]\s/);
             if (parts.length >= 2) {
               const left = parts.shift();
               const right = parts.join(' - ');
@@ -317,7 +373,7 @@
           });
         }
       }
-      if (t.includes('フレーズ') || t.includes('mẫu câu')) {
+      if (isPhrase) {
         h.classList.add('sec-head', 'phrase-head');
         const next = h.nextElementSibling;
         if (next && (next.tagName === 'UL' || next.tagName === 'OL')) {
@@ -331,16 +387,13 @@
         }
       }
     });
-  }
-
-  // Extra pass: robust parsing for vocab lines, and graceful headers
-  function refineVocabDisplay() {
+  }function refineVocabDisplay() {
     const lists = markdownView ? markdownView.querySelectorAll('.vocab-list') : [];
     lists.forEach(ul => {
       ul.querySelectorAll('li').forEach(li => {
         if (li.dataset.vrefined === '1') return;
         const raw = (li.textContent || '').trim();
-        const m = raw.match(/^(.*?)\s*[\-–—:：]\s*(.+)$/); // allow dash/colon without strict spacing
+        const m = raw.match(/^(.*?)\s*[\-– E�E�]\s*(.+)$/); // allow dash/colon without strict spacing
         if (m) {
           const left = m[1].trim();
           const right = m[2].trim();
@@ -396,23 +449,21 @@
   }
 
   // Map group to class for color + icon choice
+    // Map group to class for color + icon choice (ASCII-safe)
   function groupClass(name) {
     const k = (name || '').toLowerCase();
     if (k.includes('pre')) return 'gi-pre';
     if (k.includes('kick')) return 'gi-kick';
-    if (k.includes('basic') || k.includes('基本')) return 'gi-basic';
-    if (k.includes('detail') || k.includes('詳細')) return 'gi-detail';
-    if (k.includes('coding') || k.includes('code') || k.includes('実装') || k.includes('コーチ')) return 'gi-code';
-    if (k.includes('test') || k.includes('チ') || k.includes('テスト')) return 'gi-test';
-    if (k.includes('uat') || k.includes('受け')) return 'gi-uat';
-    if (k.includes('release') || k.includes('リリース') || k.includes('運用')) return 'gi-release';
-    if (k.includes('process') || k.includes('プロセス')) return 'gi-process';
-    if (k.includes('interview') || k.includes('面接')) return 'gi-interview';
+    if (k.includes('basic')) return 'gi-basic';
+    if (k.includes('detail')) return 'gi-detail';
+    if (k.includes('coding') || k.includes('code')) return 'gi-code';
+    if (k.includes('test')) return 'gi-test';
+    if (k.includes('uat')) return 'gi-uat';
+    if (k.includes('release') || k.includes('ops')) return 'gi-release';
+    if (k.includes('process') || k.includes('proc')) return 'gi-process';
+    if (k.includes('interview')) return 'gi-interview';
     return 'gi-default';
-  }
-
-  // Small inline SVGs per group class
-  function groupIconSVG(giClass) {
+  }function groupIconSVG(giClass) {
     switch (giClass) {
       case 'gi-pre':
       case 'gi-kick':
@@ -450,9 +501,14 @@
 
   function route() {
     const hash = window.location.hash || '';
+    const pretty = hash.match(/^#lesson\/?([A-Za-z0-9_\-\.]+)/);
     const m = hash.match(/^#lesson:(.+)$/);
     const legacy = hash.match(/^#(.+\.md)$/i);
-    if (m && m[1]) {
+    if (pretty && pretty[1]) {
+      const id = pretty[1];
+      const path = `data/${id}.md`;
+      renderLesson(path);
+    } else if (m && m[1]) {
       const path = m[1].includes('..') ? defaultLesson : m[1];
       renderLesson(path);
     } else if (legacy) {
@@ -461,7 +517,18 @@
       markdownView.hidden = true;
       outlineView.hidden = false;
       if (detailControls) detailControls.hidden = true;
-      document.title = 'IT日本語会話 — Outline';
+      document.title = 'IT Nihongo Kaiwa — Outline';
+      try {
+        if (typeof setDynamicSEO === 'function') {
+          setDynamicSEO({
+            title: 'IT Nihongo Kaiwa — Mục lục',
+            description: 'Mục lục các bài hội thoại IT tiếng Nhật. Mẫu câu, từ vựng, và tình huống thực tế.',
+            url: location.origin + location.pathname + '#list'
+          });
+        } else {
+          document.title = 'IT Nihongo Kaiwa — Mục lục';
+        }
+      } catch { document.title = 'IT Nihongo Kaiwa — Mục lục'; }
       renderOutline();
     }
   }
@@ -470,7 +537,151 @@
   document.addEventListener('DOMContentLoaded', async () => {
     initVNToggle();
     await discoverLessons();
+    try {
+      // Seed initial view counts from outline (if provided)
+      if (window && Array.isArray(outlineGroups)) {
+        const seed = {};
+        for (const g of outlineGroups) {
+          for (const it of (g.items || [])) {
+            seed[it.id] = Number(it.views || 0) || 0;
+          }
+        }
+        window.__seedViews = seed;
+      }
+    } catch {}
     if (!window.location.hash) window.location.hash = '#list';
     route();
   });
 })();
+
+// --- Views counter (CountAPI + local fallback) ---
+(function(){
+  window.lessonIdFromPath = function(p){
+    const base = (p || '').split('/').pop() || '';
+    return base.replace(/\.md$/i, '');
+  }
+
+  const VIEW_NS = 'it-nihongo-kaiwa';
+  async function apiJSON(url) {
+    const res = await fetch(url, { cache: 'no-cache' });
+    if (!res.ok) throw new Error(String(res.status));
+    return res.json();
+  }
+
+  // SEO helpers (safe no-ops if not used)
+  window.setDynamicSEO = function({ title, description, url }){
+    try {
+      if (title) document.title = title;
+      const set = (selector, attr, val) => {
+        let el = document.querySelector(selector);
+        if (!el) {
+          if (selector.startsWith('meta[name="')) { el = document.createElement('meta'); el.setAttribute('name', selector.match(/meta\[name=\"([^\"]+)/)[1]); }
+          else if (selector.startsWith('meta[property="')) { el = document.createElement('meta'); el.setAttribute('property', selector.match(/meta\[property=\"([^\"]+)/)[1]); }
+          else if (selector.startsWith('link[rel="canonical"')) { el = document.createElement('link'); el.setAttribute('rel', 'canonical'); }
+          if (el) document.head.appendChild(el);
+        }
+        if (el) el.setAttribute(attr, val);
+      };
+      if (description) {
+        set('meta[name="description"]', 'content', description);
+        set('meta[property="og:description"]', 'content', description);
+        set('meta[name="twitter:description"]', 'content', description);
+      }
+      if (title) {
+        set('meta[property="og:title"]', 'content', title);
+        set('meta[name="twitter:title"]', 'content', title);
+      }
+      if (url) {
+        set('meta[property="og:url"]', 'content', url);
+        set('link[rel="canonical"]', 'href', url);
+      }
+    } catch {}
+  }
+
+  window.summarizeText = function(md, limit){
+    try {
+      const t = String(md || '')
+        .replace(/`{3}[\s\S]*?`{3}/g, ' ')
+        .replace(/`[^`]+`/g, ' ')
+        .replace(/^>.*$/gm, ' ')
+        .replace(/\!\[[^\]]*\]\([^)]*\)/g, ' ')
+        .replace(/\[[^\]]*\]\([^)]*\)/g, ' ')
+        .replace(/[#*_>\-]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      return t.length > limit ? t.slice(0, limit - 1) + '…' : t;
+    } catch { return ''; }
+  }
+
+  // Cached count without waiting for network (seed + local)
+  window.cachedViewCount = function(id){
+    const seed = (window.__seedViews && window.__seedViews[id]) ? Number(window.__seedViews[id]) : 0;
+    return seed + lsGet(id);
+  }
+
+  function lsGet(id){
+    try { return parseInt(localStorage.getItem('vc::'+id) || '0', 10) || 0; } catch { return 0; }
+  }
+  function lsSet(id, v){ try { localStorage.setItem('vc::'+id, String(v)); } catch {} }
+
+  window.getViewCount = async function(id){
+    try {
+      const data = await apiJSON(`https://api.countapi.xyz/get/${encodeURIComponent(VIEW_NS)}/${encodeURIComponent(id)}`);
+      if (typeof data?.value === 'number') return data.value;
+    } catch {}
+    const seed = (window.__seedViews && window.__seedViews[id]) ? Number(window.__seedViews[id]) : 0;
+    return seed + lsGet(id);
+  }
+
+  window.hitViewCount = async function(id){
+    try {
+      const data = await apiJSON(`https://api.countapi.xyz/hit/${encodeURIComponent(VIEW_NS)}/${encodeURIComponent(id)}`);
+      if (typeof data?.value === 'number') { lsSet(id, data.value); return data.value; }
+    } catch {}
+    const v = lsGet(id) + 1; lsSet(id, v);
+    const seed = (window.__seedViews && window.__seedViews[id]) ? Number(window.__seedViews[id]) : 0;
+    return seed + v;
+  }
+
+  window.renderDetailViewCount = function(id, count){
+    const root = document.getElementById('markdown-view');
+    if (!root) return;
+    let badge = root.querySelector('.view-stats');
+    if (badge) {
+      const num = badge.querySelector('.num');
+      if (num) num.textContent = String(count);
+      else badge.textContent = `👁 ${count} lượt xem`;
+      return;
+    }
+    const target = root.querySelector('h1');
+    badge = document.createElement('div');
+    badge.className = 'view-stats';
+    badge.innerHTML = `👁 <span class="num">${count}</span> lượt xem`;
+    if (target && target.parentNode) target.insertAdjacentElement('afterend', badge);
+    else root.insertBefore(badge, root.firstChild);
+  }
+
+  window.populateOutlineViewCounts = async function(){
+    const els = document.querySelectorAll('.views[data-lesson-id]');
+    const tasks = [];
+    els.forEach(el => {
+      const id = el.getAttribute('data-lesson-id');
+      // Set cached value immediately
+      try {
+        const cached = window.cachedViewCount ? window.cachedViewCount(id) : 0;
+        const num1 = el.querySelector('.num');
+        if (num1) num1.textContent = cached; else el.textContent = `👁 ${cached}`;
+      } catch {}
+      // Refresh from network in background
+      tasks.push(getViewCount(id).then(v => {
+        const num2 = el.querySelector('.num');
+        if (num2) num2.textContent = v; else el.textContent = `👁 ${v}`;
+      }).catch(()=>{}));
+    });
+    await Promise.allSettled(tasks);
+  }
+})();
+
+
+
+

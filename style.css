@@ -235,6 +235,11 @@ a:hover { color: var(--gold-2); }
 .bubble .jp { font-family: "Noto Sans JP", Roboto, sans-serif; font-weight: 700; margin: 0; }
 .bubble .vn { font-style: italic; color: var(--muted); margin-top: 6px; }
 
+/* View counters */
+#markdown-view .view-stats { color: var(--muted); font-size: 0.92rem; margin: 6px 0 10px; }
+.outline-meta { color: var(--muted); font-size: 0.9rem; }
+.views { display: inline-flex; align-items: center; gap: 6px; }
+
 /* Responsive */
 @media (max-width: 840px) {
   .content-inner { padding: 16px; }

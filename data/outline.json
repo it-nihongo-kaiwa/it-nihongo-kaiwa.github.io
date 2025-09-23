@@ -52,8 +52,7 @@
       "group": "UAT／受け入れ",
       "items": [
         { "id": "6-1", "title": "UAT説明MTG", "content": "Giải thích UAT flow, rule", "video": "受け入れテスト案内" },
-        { "id": "6-2", "title": "UAT不具合対応", "content": "Họp khẩn khi bug nhiều", "video": "UATバグ対応" },
-        { "id": "6-3", "title": "受け入れ判定会議", "content": "Go/No-Go meeting", "video": "リリース可否判断" }
+        { "id": "6-2", "title": "UAT不具合対応", "content": "Họp khẩn khi bug nhiều", "video": "UATバグ対応" }
       ]
     },
     {
@@ -67,16 +66,16 @@
     {
       "group": "プロセス系",
       "items": [
-        { "id": "P-1", "title": "進捗報告MTG（週次）", "content": "Weekly KPI, risk, next", "video": "週次進捗報告" },
-        { "id": "P-2", "title": "定例全体共有", "content": "Regular all-hands update", "video": "定例共有" },
-        { "id": "P-3", "title": "障害対応緊急MTG", "content": "HOTFIX, production bug", "video": "緊急対応会議" }
+        { "id": "8-1", "title": "進捗報告MTG（週次）", "content": "Weekly KPI, risk, next", "video": "週次進捗報告" },
+        { "id": "8-2", "title": "定例全体共有", "content": "Regular all-hands update", "video": "定例共有" },
+        { "id": "8-3", "title": "障害対応緊急MTG", "content": "HOTFIX, production bug", "video": "緊急対応会議" }
       ]
     },
     {
       "group": "面接",
       "items": [
-        { "id": "I-1", "title": "自己紹介／自己PR", "content": "Background, thế mạnh", "video": "面接の自己紹介" },
-        { "id": "I-2", "title": "経験・スキル説明", "content": "Dự án tiêu biểu, tech skill", "video": "スキル説明" }
+        { "id": "9-1", "title": "自己紹介／自己PR", "content": "Background, thế mạnh", "video": "面接の自己紹介" },
+        { "id": "9-2", "title": "経験・スキル説明", "content": "Dự án tiêu biểu, tech skill", "video": "スキル説明" }
       ]
     }
   ]
