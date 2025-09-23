@@ -32,7 +32,8 @@
   // VN toggle state
   function initVNToggle() {
     const saved = localStorage.getItem('showVN');
-    const showVN = saved === '1';
+    // Default ON when not set; saved === '0' means OFF
+    const showVN = saved !== '0';
     document.body.classList.toggle('vn-hidden', !showVN);
     if (btnVN) {
       btnVN.setAttribute('aria-pressed', showVN ? 'true' : 'false');
@@ -283,6 +284,7 @@
       }
       enhanceLessonContent();
       refineVocabDisplay();
+      await insertLessonVideo(path);
       const baseName = path.split('/').pop() || 'lesson';
       document.title = `IT日本語会話 — ${baseName.replace(/\.md$/i, '')}`;
     } catch (e) {
@@ -351,6 +353,46 @@
         li.dataset.vrefined = '1';
       });
     });
+  }
+
+  // Insert lesson video (data/<id>.mp4) above the first dialogue
+  async function insertLessonVideo(mdPath) {
+    try {
+      if (!markdownView) return;
+      const base = (mdPath.split('/').pop() || '').replace(/\.md$/i, '');
+      const candidates = [
+        `video/${base}.mp4`,
+        `videos/${base}.mp4`,
+        mdPath.replace(/\.md$/i, '.mp4')
+      ];
+      let mp4 = null;
+      for (const url of candidates) {
+        if (await resourceExists(url)) { mp4 = url; break; }
+      }
+      if (!mp4) return;
+      const fig = document.createElement('figure');
+      fig.className = 'lesson-video';
+      fig.innerHTML = `
+        <video class="lesson-video-player" controls preload="metadata" playsinline src="${mp4}"></video>
+      `;
+      const firstDialog = markdownView.querySelector('.dialog');
+      if (firstDialog && firstDialog.parentNode) {
+        firstDialog.parentNode.insertBefore(fig, firstDialog);
+      } else {
+        markdownView.insertBefore(fig, markdownView.firstChild);
+      }
+    } catch {}
+  }
+
+  async function resourceExists(url) {
+    try {
+      const head = await fetch(url, { method: 'HEAD', cache: 'no-cache' });
+      if (head.ok) return true;
+    } catch {}
+    try {
+      const res = await fetch(url, { method: 'GET', headers: { 'Range': 'bytes=0-0' }, cache: 'no-cache' });
+      return res.ok;
+    } catch { return false; }
   }
 
   // Map group to class for color + icon choice
