@@ -1,17 +1,15 @@
 ﻿// IT Nihongo Kaiwa — static client
-// - Outline page grouped by data/outline.txt (if present)
-// - Fallback outline from discovered lessons
+// - Project-based navigation with lessons
 // - Detail page renders Markdown with JP/VN bubbles and VN toggle
 
 (function () {
-  const defaultLesson = 'data/lesson01.md';
   const markdownView = document.getElementById('markdown-view');
   const outlineView = document.getElementById('outline-view');
   const detailControls = document.getElementById('detail-controls');
   const btnVN = document.getElementById('btn-vn');
 
-  let lessons = []; // discovered lessons
   let outlineGroups = null; // [{group, items:[{id, topic, path, available}]}]
+  let projects = null; // [{id, title, description, icon, groups}]
 
   function escapeHtml(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -23,6 +21,15 @@
     return res.text();
   }
   async function tryFetch(path) { try { return await fetchText(path); } catch { return null; } }
+  
+  async function checkFileExists(path) {
+    try {
+      const response = await fetch(path, { method: 'HEAD', cache: 'no-cache' });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  }
 
   function parseTitle(md, fallback) {
     const m = md.match(/^\s*#\s+(.+)$/m);
@@ -117,32 +124,17 @@
     return out.join('\n');
   }
 
-  // Discover lessons and outline
-  async function discoverLessons() {
-    const found = [];
-    const manifestRaw = await tryFetch('data/lessons.json');
-    if (manifestRaw) {
-      try {
-        const entries = JSON.parse(manifestRaw);
-        for (const e of entries) {
-          const text = await tryFetch(e.path);
-          if (!text) continue;
-          found.push({ id: e.id || e.path, path: e.path, title: e.title || parseTitle(text, e.path) });
-        }
-      } catch {}
+  // Load outline and projects data
+  async function loadData() {
+    try { 
+      const outlineData = await loadOutlineGroups(); 
+      outlineGroups = outlineData.outlineGroups;
+      projects = outlineData.projects;
+    } catch (e) { 
+      console.error('Error loading data:', e);
+      outlineGroups = null; 
+      projects = null;
     }
-    if (found.length === 0) {
-      const limit = 50;
-      const probes = Array.from({ length: limit }, (_, i) => {
-        const num = String(i + 1).padStart(2, '0');
-        const path = `data/lesson${num}.md`;
-        return tryFetch(path).then(text => ({ path, text, num }));
-      });
-      const results = await Promise.all(probes);
-      for (const r of results) if (r.text) found.push({ id: `l${r.num}`, path: r.path, title: parseTitle(r.text, `Lesson ${r.num}`) });
-    }
-    lessons = found;
-    try { outlineGroups = await loadOutlineGroups(); } catch { outlineGroups = null; }
   }
 
   async function loadOutlineGroups() {
@@ -151,7 +143,28 @@
     if (jsonRaw) {
       try {
         const data = JSON.parse(jsonRaw);
-        const groups = Array.isArray(data?.outline) ? data.outline : (Array.isArray(data) ? data : []);
+        
+        // Load projects if available
+        let projectsData = null;
+        if (data.projects && Array.isArray(data.projects)) {
+          projectsData = data.projects;
+        }
+        
+        // Load outline groups - try projects first, then fallback to outline
+        let groups = [];
+        if (data.projects && Array.isArray(data.projects) && data.projects.length > 0) {
+          // Flatten all groups from all projects
+          for (const project of data.projects) {
+            if (project.groups && Array.isArray(project.groups)) {
+              groups = groups.concat(project.groups);
+            }
+          }
+        } else if (Array.isArray(data?.outline)) {
+          groups = data.outline;
+        } else if (Array.isArray(data)) {
+          groups = data;
+        }
+        
         const normalized = [];
         for (const g of groups) {
           if (!g || !g.items) continue;
@@ -162,21 +175,25 @@
             const id = String(it.id).trim();
             const topic = it.title || it.topic || id;
             const content = it.content || it.desc || '';
-            const path = `data/${id}.md`;
+            const path = it.path || `data/project1/${id}.md`;
             const views = Number(it.views ?? it.view ?? it.count ?? 0) || 0;
             items.push({ id, topic, path, content, views });
             normalized.push({ id, topic, path, group: groupName, content, views });
           }
         }
         // Availability checks
-        await Promise.all(normalized.map(r => tryFetch(r.path).then(t => { r.available = !!t; })));
+        await Promise.all(normalized.map(r => tryFetch(r.path).then(t => { 
+          r.available = !!t; 
+        })));
         // Re-group after availability
         const byGroup = new Map();
         for (const r of normalized) {
           if (!byGroup.has(r.group)) byGroup.set(r.group, []);
           byGroup.get(r.group).push({ id: r.id, topic: r.topic, path: r.path, available: r.available, content: r.content, views: r.views || 0 });
         }
-        return Array.from(byGroup.entries()).map(([group, items]) => ({ group, items }));
+        const outlineGroups = Array.from(byGroup.entries()).map(([group, items]) => ({ group, items }));
+        
+        return { outlineGroups, projects: projectsData };
       } catch {
         // fall through to TXT parser
       }
@@ -204,7 +221,198 @@
       byGroup.get(r.group).push(r);
     }
     await Promise.all(rows.map(r => tryFetch(r.path).then(t => { r.available = !!t; })));
-    return Array.from(byGroup.entries()).map(([group, items]) => ({ group, items }));
+    const outlineGroups = Array.from(byGroup.entries()).map(([group, items]) => ({ group, items }));
+    return { outlineGroups, projects: null };
+  }
+
+  function renderProjects() {
+    if (!outlineView) return;
+    if (!projects || projects.length === 0) {
+      const hint = location.protocol === 'file:'
+        ? 'Đang mềEtrực tiếp file (file://). Hãy dùng máy chủ tĩnh hoặc GitHub Pages đềEcho phép fetch().' : 'Không tìm thấy dự án. Thêm projects trong data/outline.json.';
+      outlineView.innerHTML = `<p class="loading">${hint}</p>`;
+      return;
+    }
+    
+    const frag = document.createDocumentFragment();
+    const grid = document.createElement('div');
+    grid.className = 'projects-grid';
+    
+    for (const project of projects) {
+      const card = document.createElement('article');
+      card.className = 'project-card';
+      const iconClass = project.icon || 'gi-default';
+      
+      // Check if project has lessons (groups with items)
+      const hasLessons = project.groups && project.groups.length > 0 && 
+                        project.groups.some(group => group.items && group.items.length > 0);
+      
+      if (hasLessons) {
+        card.innerHTML = `
+        <a class="project-link" href="#project/${project.id}" aria-label="Mở dự án ${escapeHtml(project.title)}">
+          <div class="project-icon ${iconClass}">${groupIconSVG(iconClass)}</div>
+          <div class="project-header">
+            <h3 class="project-title">${escapeHtml(project.title)}</h3>
+            <span class="project-level level-${project.level?.toLowerCase() || 'beginner'}">${project.level || 'Beginner'}</span>
+          </div>
+          <p class="project-desc">${escapeHtml(project.description)}</p>
+          <span class="cta">Xem bài học →</span>
+        </a>
+        `;
+      } else {
+        card.innerHTML = `
+          <div class="project-link">
+            <div class="project-icon ${iconClass}">${groupIconSVG(iconClass)}</div>
+            <div class="project-header">
+              <h3 class="project-title">${escapeHtml(project.title)}</h3>
+              <span class="project-level level-${project.level?.toLowerCase() || 'beginner'}">${project.level || 'Beginner'}</span>
+            </div>
+            <p class="project-desc">${escapeHtml(project.description)}</p>
+            <span class="badge-draft">Sắp có</span>
+          </div>
+        `;
+      }
+      
+      grid.appendChild(card);
+    }
+    
+    outlineView.innerHTML = '';
+    outlineView.appendChild(grid);
+  }
+
+  async function renderProjectLessons(projectId) {
+    if (!outlineView || !projects) return;
+    
+    const project = projects.find(p => p.id === projectId);
+    if (!project) {
+      outlineView.innerHTML = '<p class="loading">Không tìm thấy dự án.</p>';
+      return;
+    }
+    
+    const frag = document.createDocumentFragment();
+    
+    // Add back button
+    const backButton = document.createElement('div');
+    backButton.className = 'back-button';
+    backButton.innerHTML = `
+      <a href="#list" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Quay lại danh sách dự án
+      </a>
+    `;
+    frag.appendChild(backButton);
+    
+    // Add project header
+    const header = document.createElement('div');
+    header.className = 'project-header';
+    const iconClass = project.icon || 'gi-default';
+    
+    // Build summary info if available
+    let summaryHTML = '';
+    if (project.summary) {
+      summaryHTML = `
+        <div class="project-summary">
+          <div class="summary-row">
+            <div class="summary-item">
+              <span class="summary-label">Scope:</span>
+              <span class="summary-value">${escapeHtml(project.summary.scope)}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Duration:</span>
+              <span class="summary-value">${escapeHtml(project.summary.duration)}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Team:</span>
+              <span class="summary-value">${escapeHtml(project.summary.team)}</span>
+            </div>
+          </div>
+          <div class="summary-features">
+            <span class="summary-label">Key Features:</span>
+            <div class="feature-tags">
+              ${project.summary.features.map(feature => `<span class="feature-tag">${escapeHtml(feature)}</span>`).join('')}
+            </div>
+          </div>
+          <div class="summary-tech">
+            <span class="summary-label">Tech Stack:</span>
+            <span class="summary-value">${escapeHtml(project.summary.tech)}</span>
+          </div>
+        </div>
+      `;
+    }
+    
+    header.innerHTML = `
+      <div class="project-icon ${iconClass}">${groupIconSVG(iconClass)}</div>
+      <div class="project-info">
+        <h2 class="project-title">${escapeHtml(project.title)}</h2>
+        <p class="project-desc">${escapeHtml(project.description)}</p>
+        ${summaryHTML}
+      </div>
+    `;
+    frag.appendChild(header);
+    
+    // Add lesson groups
+    for (const g of project.groups) {
+      const section = document.createElement('section');
+      section.className = 'outline-section';
+      const giClass = groupClass(g.group);
+      section.innerHTML = `<h3 class="outline-group"><span class="group-icon ${giClass}" aria-hidden="true">${groupIconSVG(giClass)}</span><span>${escapeHtml(g.group)}</span></h3>`;
+      const grid = document.createElement('div');
+      grid.className = 'outline-grid';
+      
+      // Check availability for all items in parallel
+      const availabilityChecks = g.items.map(async (it) => {
+        const path = it.path || `data/project1/${it.id}.md`;
+        const isAvailable = await checkFileExists(path);
+        return { ...it, path, isAvailable };
+      });
+      
+      const itemsWithAvailability = await Promise.all(availabilityChecks);
+      
+      for (const it of itemsWithAvailability) {
+        const card = document.createElement('article');
+        card.className = 'outline-card' + (it.isAvailable ? ' available' : '');
+        if (it.isAvailable) {
+          card.innerHTML = `
+            <a class="card-link" href="#lesson:${it.path}" aria-label="Mo ${escapeHtml(it.title || it.topic)}">
+              <h4 class="outline-title">${escapeHtml(it.title || it.topic)}</h4>
+              ${it.content ? `<p class=\"outline-desc\">${escapeHtml(it.content)}</p>` : ''}
+              <span class="cta">Mở bài →</span>
+            </a>
+          `;
+        } else {
+          card.innerHTML = `
+            <h4 class="outline-title">${escapeHtml(it.title || it.topic)}</h4>
+            ${it.content ? `<p class=\"outline-desc\">${escapeHtml(it.content)}</p>` : ''}
+            <span class="badge-draft">Sắp có</span>
+          `;
+        }
+        // Add view badge into available cards (if link exists)
+        try {
+          const link = card.querySelector('.card-link');
+          if (link) {
+            // Only apply legacy lesson routing for project1
+            if (projectId === '1') {
+              const id = (it && it.id) ? String(it.id) : String((it && it.path || '').split('/').pop() || '').replace(/\.md$/i, '');
+              try { link.setAttribute('href', `#lesson/${id}`); } catch {}
+              const meta = document.createElement('div');
+              meta.className = 'outline-meta';
+              meta.innerHTML = `<span class="views" data-lesson-id="${escapeHtml(id)}">👁 <span class=\"num\">—</span></span>`;
+              const cta = link.querySelector('.cta');
+              if (cta) link.insertBefore(meta, cta); else link.appendChild(meta);
+            }
+          }
+        } catch {}
+        grid.appendChild(card);
+      }
+      section.appendChild(grid);
+      frag.appendChild(section);
+    }
+    
+    outlineView.innerHTML = '';
+    outlineView.appendChild(frag);
+    try { if (window.populateOutlineViewCounts) window.populateOutlineViewCounts(); } catch {}
   }
 
   function renderOutline() {
@@ -408,21 +616,33 @@
     });
   }
 
-  // Insert lesson video (data/<id>.mp4) above the first dialogue
+  // Insert lesson video above the first dialogue
   async function insertLessonVideo(mdPath) {
     try {
       if (!markdownView) return;
       const base = (mdPath.split('/').pop() || '').replace(/\.md$/i, '');
+      
+      // Determine project path for video based on project ID
+      let projectPath = 'video/';
+      const projectMatch = mdPath.match(/\/project(\d+)\//);
+      if (projectMatch) {
+        const projectId = projectMatch[1];
+        projectPath = `video/project${projectId}/`;
+      }
+      
       const candidates = [
+        `${projectPath}${base}.mp4`,
         `video/${base}.mp4`,
         `videos/${base}.mp4`,
         mdPath.replace(/\.md$/i, '.mp4')
       ];
+      
       let mp4 = null;
       for (const url of candidates) {
         if (await resourceExists(url)) { mp4 = url; break; }
       }
       if (!mp4) return;
+      
       const fig = document.createElement('figure');
       fig.className = 'lesson-video';
       fig.innerHTML = `
@@ -493,50 +713,84 @@
       case 'gi-interview':
         // chat bubble
         return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a6 6 0 01-6 6H6l-3 3V9a6 6 0 016-6h6a6 6 0 016 6v6z" stroke="currentColor" stroke-width="1.6"/></svg>`;
+      case 'gi-folder':
+        // folder
+        return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2v11z" stroke="currentColor" stroke-width="1.6"/></svg>`;
+      case 'gi-shopping-cart':
+        // shopping cart
+        return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="21" r="1" stroke="currentColor" stroke-width="1.6"/><circle cx="20" cy="21" r="1" stroke="currentColor" stroke-width="1.6"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" stroke="currentColor" stroke-width="1.6"/></svg>`;
       default:
         // default grid
         return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z" stroke="currentColor" stroke-width="1.6"/></svg>`;
     }
   }
 
-  function route() {
+  async function route() {
     const hash = window.location.hash || '';
     const pretty = hash.match(/^#lesson\/?([A-Za-z0-9_\-\.]+)/);
     const m = hash.match(/^#lesson:(.+)$/);
     const legacy = hash.match(/^#(.+\.md)$/i);
+    const projectMatch = hash.match(/^#project\/([A-Za-z0-9_\-]+)/);
+    
+    // Show/hide hero section
+    const heroSection = document.getElementById('hero-section');
+    if (heroSection) {
+      heroSection.hidden = !(hash === '' || hash === '#list');
+    }
+    
     if (pretty && pretty[1]) {
       const id = pretty[1];
-      const path = `data/${id}.md`;
+      const path = `data/project1/${id}.md`;
       renderLesson(path);
     } else if (m && m[1]) {
-      const path = m[1].includes('..') ? defaultLesson : m[1];
+      const path = m[1].includes('..') ? 'data/project1/0-1.md' : m[1];
       renderLesson(path);
     } else if (legacy) {
       renderLesson(legacy[1]);
+    } else if (projectMatch && projectMatch[1]) {
+      const projectId = projectMatch[1];
+      markdownView.hidden = true;
+      outlineView.hidden = false;
+      if (detailControls) detailControls.hidden = true;
+      document.title = `IT Nihongo Kaiwa — ${projectId}`;
+      try {
+        if (typeof setDynamicSEO === 'function') {
+          const project = projects ? projects.find(p => p.id === projectId) : null;
+          const title = project ? project.title : projectId;
+          setDynamicSEO({
+            title: `IT Nihongo Kaiwa — ${title}`,
+            description: project ? project.description : 'Bài học IT tiếng Nhật',
+            url: location.origin + location.pathname + `#project/${projectId}`
+          });
+        } else {
+          document.title = `IT Nihongo Kaiwa — ${projectId}`;
+        }
+      } catch { document.title = `IT Nihongo Kaiwa — ${projectId}`; }
+      await renderProjectLessons(projectId);
     } else {
       markdownView.hidden = true;
       outlineView.hidden = false;
       if (detailControls) detailControls.hidden = true;
-      document.title = 'IT Nihongo Kaiwa — Outline';
+      document.title = 'IT Nihongo Kaiwa — Dự án';
       try {
         if (typeof setDynamicSEO === 'function') {
           setDynamicSEO({
-            title: 'IT Nihongo Kaiwa — Mục lục',
-            description: 'Mục lục các bài hội thoại IT tiếng Nhật. Mẫu câu, từ vựng, và tình huống thực tế.',
+            title: 'IT Nihongo Kaiwa — Dự án',
+            description: 'Danh sách các dự án học IT tiếng Nhật. Mẫu câu, từ vựng, và tình huống thực tế.',
             url: location.origin + location.pathname + '#list'
           });
         } else {
-          document.title = 'IT Nihongo Kaiwa — Mục lục';
+          document.title = 'IT Nihongo Kaiwa — Dự án';
         }
-      } catch { document.title = 'IT Nihongo Kaiwa — Mục lục'; }
-      renderOutline();
+      } catch { document.title = 'IT Nihongo Kaiwa — Dự án'; }
+      renderProjects();
     }
   }
 
   window.addEventListener('hashchange', route);
   document.addEventListener('DOMContentLoaded', async () => {
     initVNToggle();
-    await discoverLessons();
+    await loadData();
     try {
       // Seed initial view counts from outline (if provided)
       if (window && Array.isArray(outlineGroups)) {

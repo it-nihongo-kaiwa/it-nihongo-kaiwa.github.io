@@ -1,81 +1,821 @@
 {
+  "projects": [
+    {
+      "id": "1",
+      "title": "ファイル管理機能",
+      "description": "Hệ thống quản lý file với tìm kiếm, phân quyền và tích hợp user management. Dự án 2 tháng với team 5 người (3 dev, 1 tester, 1 BrSE).",
+      "icon": "gi-folder",
+      "level": "Beginner",
+      "summary": {
+        "scope": "ファイル管理機能 (File Management System)",
+        "duration": "2ヶ月 (2 months)",
+        "team": "5名 (3 dev, 1 tester, 1 BrSE)",
+        "features": [
+          "ファイル検索・一覧表示 (File search & listing)",
+          "アクセス権限管理 (Access control)",
+          "アップロード・ダウンロード (Upload/Download)",
+          "タグ管理 (Tag management)",
+          "権限変更履歴 (Permission change history)"
+        ],
+        "tech": "React + TypeScript, Node.js, PostgreSQL, AWS S3, Docker",
+        "phases": [
+          "Pre Kick-off: 要件確認・見積り",
+          "Kick-off & 要件定義: チーム紹介・スコープ確認", 
+          "基本設計: 画面設計・権限管理設計",
+          "詳細設計: DDD・API仕様・ERD",
+          "実装: コーディング規約・ブランチ運用",
+          "テスト: UT/IT・不具合対応",
+          "UAT: 受け入れテスト・バグ対応",
+          "リリース: 本番デプロイ・運用開始"
+        ]
+      },
+      "groups": [
+        {
+          "group": "Pre Kick-off",
+          "items": [
+            {
+              "id": "0-1",
+              "title": "要件事前確認MTG",
+              "content": "KH gửi yêu cầu sơ bộ, team hỏi để clear",
+              "video": "要件の事前確認",
+              "path": "data/project1/0-1.md"
+            },
+            {
+              "id": "0-2",
+              "title": "見積り説明MTG",
+              "content": "Trình bày estimate, assumption, risk",
+              "video": "見積りの説明",
+              "path": "data/project1/0-2.md"
+            }
+          ]
+        },
+        {
+          "group": "Kick-off & 要件定義",
+          "items": [
+            {
+              "id": "1-1",
+              "title": "キックオフMTG",
+              "content": "Giới thiệu team, scope, mục tiêu",
+              "video": "自己紹介とキックオフ",
+              "path": "data/project1/1-1.md"
+            },
+            {
+              "id": "1-2",
+              "title": "要件ヒアリング",
+              "content": "Hỏi–đáp yêu cầu chi tiết",
+              "video": "要件を聞き取る",
+              "path": "data/project1/1-2.md"
+            },
+            {
+              "id": "1-3",
+              "title": "要件確認／齟齬調整",
+              "content": "Chốt hiểu đúng, xử lý lệch",
+              "video": "認識齟齬の調整",
+              "path": "data/project1/1-3.md"
+            }
+          ]
+        },
+        {
+          "group": "基本設計",
+          "items": [
+            {
+              "id": "2-1",
+              "title": "基本設計レビュー",
+              "content": "Review tài liệu BD",
+              "video": "設計レビュー会話",
+              "path": "data/project1/2-1.md"
+            },
+            {
+              "id": "2-2",
+              "title": "画面設計打ち合わせ",
+              "content": "Confirm UI flow, screen transition",
+              "video": "画面遷移の確認",
+              "path": "data/project1/2-2.md"
+            },
+            {
+              "id": "2-3",
+              "title": "環境確認MTG",
+              "content": "Dev/Test/Prod, CI/CD, quyền",
+              "video": "環境構築の相談",
+              "path": "data/project1/2-3.md"
+            }
+          ]
+        },
+        {
+          "group": "詳細設計",
+          "items": [
+            {
+              "id": "3-1",
+              "title": "詳細設計レビュー",
+              "content": "Review DDD, API仕様, ERD",
+              "video": "詳細設計レビュー",
+              "path": "data/project1/3-1.md"
+            },
+            {
+              "id": "3-2",
+              "title": "非機能要件確認",
+              "content": "性能・監視・セキュリティ",
+              "video": "非機能の確認",
+              "path": "data/project1/3-2.md"
+            },
+            {
+              "id": "3-3",
+              "title": "設計Q&A",
+              "content": "Hỏi đáp edge cases",
+              "video": "設計Q&A",
+              "path": "data/project1/3-3.md"
+            }
+          ]
+        },
+        {
+          "group": "実装／コーディング",
+          "items": [
+            {
+              "id": "4-1",
+              "title": "実装方針確認",
+              "content": "Coding standard, branch, commit",
+              "video": "実装方針の合意",
+              "path": "data/project1/4-1.md"
+            },
+            {
+              "id": "4-2",
+              "title": "技術課題共有",
+              "content": "Vấn đề lib, version, kiến trúc",
+              "video": "技術課題の共有",
+              "path": "data/project1/4-2.md"
+            },
+            {
+              "id": "4-3",
+              "title": "追加要望対応",
+              "content": "Scope change, re-estimate",
+              "video": "追加要望の相談",
+              "path": "data/project1/4-3.md"
+            },
+            {
+              "id": "4-4",
+              "title": "機能デモMTG",
+              "content": "Demo chức năng vừa xong, lấy feedback KH",
+              "video": "機能デモ",
+              "path": "data/project1/4-4.md"
+            }
+          ]
+        },
+        {
+          "group": "テスト (UT/IT)",
+          "items": [
+            {
+              "id": "5-1",
+              "title": "テストケースレビュー",
+              "content": "Confirm test case design",
+              "video": "テストケース確認",
+              "path": "data/project1/5-1.md"
+            },
+            {
+              "id": "5-2",
+              "title": "テスト結果報告",
+              "content": "Báo cáo UT/IT, tỉ lệ pass",
+              "video": "テスト進捗報告",
+              "path": "data/project1/5-2.md"
+            },
+            {
+              "id": "5-3",
+              "title": "不具合報告MTG",
+              "content": "Bug report & fix request",
+              "video": "不具合報告",
+              "path": "data/project1/5-3.md"
+            }
+          ]
+        },
+        {
+          "group": "UAT／受け入れ",
+          "items": [
+            {
+              "id": "6-1",
+              "title": "UAT説明MTG",
+              "content": "Giải thích UAT flow, rule",
+              "video": "受け入れテスト案内",
+              "path": "data/project1/6-1.md"
+            },
+            {
+              "id": "6-2",
+              "title": "UAT不具合対応",
+              "content": "Họp khẩn khi bug nhiều",
+              "video": "UATバグ対応",
+              "path": "data/project1/6-2.md"
+            }
+          ]
+        },
+        {
+          "group": "リリース・運用",
+          "items": [
+            {
+              "id": "7-1",
+              "title": "リリース前最終確認",
+              "content": "Checklist final, rollback plan",
+              "video": "リリース前確認",
+              "path": "data/project1/7-1.md"
+            },
+            {
+              "id": "7-2",
+              "title": "リリース後レビュー",
+              "content": "Post-mortem meeting",
+              "video": "リリース振り返り",
+              "path": "data/project1/7-2.md"
+            },
+            {
+              "id": "7-3",
+              "title": "保守・改善提案MTG",
+              "content": "Đề xuất automation, AI",
+              "video": "改善提案",
+              "path": "data/project1/7-3.md"
+            }
+          ]
+        },
+        {
+          "group": "プロセス系",
+          "items": [
+            {
+              "id": "8-1",
+              "title": "進捗報告MTG（週次）",
+              "content": "Weekly KPI, risk, next",
+              "video": "週次進捗報告",
+              "path": "data/project1/8-1.md"
+            },
+            {
+              "id": "8-2",
+              "title": "定例全体共有",
+              "content": "Regular all-hands update",
+              "video": "定例共有",
+              "path": "data/project1/8-2.md"
+            },
+            {
+              "id": "8-3",
+              "title": "障害対応緊急MTG",
+              "content": "HOTFIX, production bug",
+              "video": "緊急対応会議",
+              "path": "data/project1/8-3.md"
+            }
+          ]
+        },
+        {
+          "group": "面接",
+          "items": [
+            {
+              "id": "9-1",
+              "title": "自己紹介／自己PR",
+              "content": "Background, thế mạnh",
+              "video": "面接の自己紹介",
+              "path": "data/project1/9-1.md"
+            },
+            {
+              "id": "9-2",
+              "title": "経験・スキル説明",
+              "content": "Dự án tiêu biểu, tech skill",
+              "video": "スキル説明",
+              "path": "data/project1/9-2.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "title": "Eコマースシステム",
+      "description": "Hệ thống thương mại điện tử với thanh toán, quản lý đơn hàng và tích hợp API. Dự án 3 tháng với team 6 người (4 dev, 1 tester, 1 BrSE).",
+      "icon": "gi-shopping-cart",
+      "level": "Intermediate",
+      "summary": {
+        "scope": "Eコマースシステム (E-commerce System)",
+        "duration": "3ヶ月 (3 months)",
+        "team": "6名 (4 dev, 1 tester, 1 BrSE)",
+        "features": [
+          "商品管理 (Product management)",
+          "注文処理 (Order processing)",
+          "決済システム (Payment system)",
+          "在庫管理 (Inventory management)",
+          "顧客管理 (Customer management)"
+        ],
+        "tech": "React + TypeScript, Node.js, PostgreSQL, Stripe API, Docker",
+        "phases": [
+          "Pre Kick-off: 要件確認・見積り",
+          "Kick-off & 要件定義: チーム紹介・スコープ確認", 
+          "基本設計: 画面設計・決済設計",
+          "詳細設計: DDD・API仕様・ERD",
+          "実装: コーディング規約・ブランチ運用",
+          "テスト: UT/IT・不具合対応",
+          "UAT: 受け入れテスト・バグ対応",
+          "リリース: 本番デプロイ・運用開始"
+        ]
+      },
+      "groups": [
+        {
+          "group": "Pre Kick-off",
+          "items": [
+            {
+              "id": "0-1",
+              "title": "要件ヒアリング・市場調査",
+              "content": "Eコマース市場の動向分析、競合他社調査、ターゲット顧客のニーズ分析",
+              "video": "市場調査・要件ヒアリング",
+              "path": "data/project2/0-1.md"
+            },
+            {
+              "id": "0-2", 
+              "title": "技術選定・アーキテクチャ検討",
+              "content": "マイクロサービス vs モノリシック、決済システム選定、スケーラビリティ設計",
+              "video": "技術選定・アーキテクチャ",
+              "path": "data/project2/0-2.md"
+            }
+          ]
+        },
+        {
+          "group": "Kick-off & 要件定義",
+          "items": [
+            {
+              "id": "1-1",
+              "title": "プロジェクトキックオフ",
+              "content": "チーム体制、スコープ確認、マイルストーン設定、リスク管理計画",
+              "video": "プロジェクトキックオフ",
+              "path": "data/project2/1-1.md"
+            },
+            {
+              "id": "1-2",
+              "title": "ビジネス要件定義",
+              "content": "商品管理、在庫管理、注文処理、決済フロー、顧客管理の詳細要件",
+              "video": "ビジネス要件定義",
+              "path": "data/project2/1-2.md"
+            },
+            {
+              "id": "1-3",
+              "title": "非機能要件・パフォーマンス要件",
+              "content": "同時接続数、レスポンス時間、可用性、セキュリティ、コンプライアンス要件",
+              "video": "非機能要件・パフォーマンス",
+              "path": "data/project2/1-3.md"
+            }
+          ]
+        },
+        {
+          "group": "基本設計",
+          "items": [
+            {
+              "id": "2-1",
+              "title": "システムアーキテクチャ設計",
+              "content": "フロントエンド、バックエンド、データベース、外部API連携の全体設計",
+              "video": "システムアーキテクチャ設計",
+              "path": "data/project2/2-1.md"
+            },
+            {
+              "id": "2-2",
+              "title": "決済システム設計",
+              "content": "Stripe/PayPal連携、セキュリティ対策、PCI DSS準拠、決済フロー設計",
+              "video": "決済システム設計",
+              "path": "data/project2/2-2.md"
+            },
+            {
+              "id": "2-3",
+              "title": "在庫管理・商品管理設計",
+              "content": "リアルタイム在庫更新、商品カテゴリ管理、価格設定、在庫アラート機能",
+              "video": "在庫・商品管理設計",
+              "path": "data/project2/2-3.md"
+            }
+          ]
+        },
+        {
+          "group": "詳細設計",
+          "items": [
+            {
+              "id": "3-1",
+              "title": "API設計・データベース設計",
+              "content": "RESTful API仕様、GraphQL導入検討、データベース正規化、インデックス設計",
+              "video": "API・DB設計",
+              "path": "data/project2/3-1.md"
+            },
+            {
+              "id": "3-2",
+              "title": "セキュリティ設計・認証認可",
+              "content": "JWT認証、OAuth2.0、RBAC、データ暗号化、セキュリティ監査ログ",
+              "video": "セキュリティ・認証設計",
+              "path": "data/project2/3-2.md"
+            },
+            {
+              "id": "3-3",
+              "title": "パフォーマンス・スケーラビリティ設計",
+              "content": "キャッシュ戦略、CDN設計、ロードバランシング、データベース最適化",
+              "video": "パフォーマンス設計",
+              "path": "data/project2/3-3.md"
+            }
+          ]
+        },
+        {
+          "group": "実装",
+          "items": [
+            {
+              "id": "4-1",
+              "title": "フロントエンド開発",
+              "content": "React/Next.js実装、状態管理、UI/UX最適化、レスポンシブデザイン",
+              "video": "フロントエンド開発",
+              "path": "data/project2/4-1.md"
+            },
+            {
+              "id": "4-2",
+              "title": "バックエンド・API開発",
+              "content": "Node.js/Express実装、マイクロサービス化、API Gateway、非同期処理",
+              "video": "バックエンド開発",
+              "path": "data/project2/4-2.md"
+            },
+            {
+              "id": "4-3",
+              "title": "決済・外部連携実装",
+              "content": "Stripe API統合、Webhook処理、エラーハンドリング、テスト決済実装",
+              "video": "決済・外部連携",
+              "path": "data/project2/4-3.md"
+            },
+            {
+              "id": "4-4",
+              "title": "在庫・商品管理実装",
+              "content": "リアルタイム在庫更新、商品検索、カテゴリ管理、価格計算ロジック",
+              "video": "在庫・商品管理実装",
+              "path": "data/project2/4-4.md"
+            }
+          ]
+        },
+        {
+          "group": "テスト",
+          "items": [
+            {
+              "id": "5-1",
+              "title": "単体テスト・結合テスト",
+              "content": "Jest/Testing Library、APIテスト、データベーステスト、モック実装",
+              "video": "単体・結合テスト",
+              "path": "data/project2/5-1.md"
+            },
+            {
+              "id": "5-2",
+              "title": "パフォーマンステスト・負荷テスト",
+              "content": "JMeter負荷テスト、レスポンス時間測定、スケーラビリティ検証",
+              "video": "パフォーマンステスト",
+              "path": "data/project2/5-2.md"
+            },
+            {
+              "id": "5-3",
+              "title": "セキュリティテスト・ペネトレーションテスト",
+              "content": "脆弱性スキャン、SQLインジェクション対策、XSS対策、認証テスト",
+              "video": "セキュリティテスト",
+              "path": "data/project2/5-3.md"
+            }
+          ]
+        },
+        {
+          "group": "UAT・受け入れテスト",
+          "items": [
+            {
+              "id": "6-1",
+              "title": "UAT準備・テストシナリオ作成",
+              "content": "エンドツーエンドテストシナリオ、ユーザーストーリー検証、業務フロー確認",
+              "video": "UAT準備・シナリオ作成",
+              "path": "data/project2/6-1.md"
+            },
+            {
+              "id": "6-2",
+              "title": "決済フロー・注文処理UAT",
+              "content": "決済プロセス検証、注文ステータス管理、在庫連動確認、エラー処理検証",
+              "video": "決済・注文処理UAT",
+              "path": "data/project2/6-2.md"
+            },
+            {
+              "id": "6-3",
+              "title": "パフォーマンス・セキュリティUAT",
+              "content": "同時接続テスト、レスポンス時間確認、セキュリティ要件検証",
+              "video": "パフォーマンス・セキュリティUAT",
+              "path": "data/project2/6-3.md"
+            }
+          ]
+        },
+        {
+          "group": "リリース・運用",
+          "items": [
+            {
+              "id": "7-1",
+              "title": "本番環境構築・デプロイ",
+              "content": "AWS/GCP環境構築、CI/CDパイプライン、ブルーグリーンデプロイ、監視設定",
+              "video": "本番環境・デプロイ",
+              "path": "data/project2/7-1.md"
+            },
+            {
+              "id": "7-2",
+              "title": "リリース後監視・運用",
+              "content": "アプリケーション監視、ログ分析、パフォーマンス監視、アラート設定",
+              "video": "監視・運用",
+              "path": "data/project2/7-2.md"
+            },
+            {
+              "id": "7-3",
+              "title": "障害対応・メンテナンス",
+              "content": "インシデント対応、ホットフィックス、定期メンテナンス、バックアップ・復旧",
+              "video": "障害対応・メンテナンス",
+              "path": "data/project2/7-3.md"
+            }
+          ]
+        },
+        {
+          "group": "プロジェクト管理・品質管理",
+          "items": [
+            {
+              "id": "8-1",
+              "title": "アジャイル開発・スクラム運用",
+              "content": "スプリント計画、デイリースタンドアップ、レトロスペクティブ、ベロシティ管理",
+              "video": "アジャイル・スクラム運用",
+              "path": "data/project2/8-1.md"
+            },
+            {
+              "id": "8-2",
+              "title": "コードレビュー・品質管理",
+              "content": "プルリクエストレビュー、コード品質メトリクス、リファクタリング、技術負債管理",
+              "video": "コードレビュー・品質管理",
+              "path": "data/project2/8-2.md"
+            },
+            {
+              "id": "8-3",
+              "title": "チーム管理・コミュニケーション",
+              "content": "リモートワーク管理、チームビルディング、知識共有、技術文書化",
+              "video": "チーム管理・コミュニケーション",
+              "path": "data/project2/8-3.md"
+            }
+          ]
+        },
+        {
+          "group": "高度な技術・最適化",
+          "items": [
+            {
+              "id": "9-1",
+              "title": "マイクロサービス・分散システム",
+              "content": "サービス間通信、データ整合性、分散トランザクション、サービスメッシュ",
+              "video": "マイクロサービス・分散システム",
+              "path": "data/project2/9-1.md"
+            },
+            {
+              "id": "9-2",
+              "title": "AI・機械学習統合",
+              "content": "レコメンデーションエンジン、価格最適化、不正検知、顧客行動分析",
+              "video": "AI・機械学習統合",
+              "path": "data/project2/9-2.md"
+            },
+            {
+              "id": "9-3",
+              "title": "DevOps・クラウドネイティブ",
+              "content": "Kubernetes運用、コンテナ化、サーバーレス、IaC、GitOps",
+              "video": "DevOps・クラウドネイティブ",
+              "path": "data/project2/9-3.md"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "outline": [
     {
       "group": "Pre Kick-off",
       "items": [
-        { "id": "0-1", "title": "要件事前確認MTG", "content": "KH gửi yêu cầu sơ bộ, team hỏi để clear", "video": "要件の事前確認" },
-        { "id": "0-2", "title": "見積り説明MTG", "content": "Trình bày estimate, assumption, risk", "video": "見積りの説明" }
+        {
+          "id": "0-1",
+          "title": "要件事前確認MTG",
+          "content": "KH gửi yêu cầu sơ bộ, team hỏi để clear",
+          "video": "要件の事前確認",
+          "path": "data/project1/0-1.md"
+        },
+        {
+          "id": "0-2",
+          "title": "見積り説明MTG",
+          "content": "Trình bày estimate, assumption, risk",
+          "video": "見積りの説明",
+          "path": "data/project1/0-2.md"
+        }
       ]
     },
     {
       "group": "Kick-off & 要件定義",
       "items": [
-        { "id": "1-1", "title": "キックオフMTG", "content": "Giới thiệu team, scope, mục tiêu", "video": "自己紹介とキックオフ" },
-        { "id": "1-2", "title": "要件ヒアリング", "content": "Hỏi–đáp yêu cầu chi tiết", "video": "要件を聞き取る" },
-        { "id": "1-3", "title": "要件確認／齟齬調整", "content": "Chốt hiểu đúng, xử lý lệch", "video": "認識齟齬の調整" }
+        {
+          "id": "1-1",
+          "title": "キックオフMTG",
+          "content": "Giới thiệu team, scope, mục tiêu",
+          "video": "自己紹介とキックオフ",
+          "path": "data/project1/1-1.md"
+        },
+        {
+          "id": "1-2",
+          "title": "要件ヒアリング",
+          "content": "Hỏi–đáp yêu cầu chi tiết",
+          "video": "要件を聞き取る",
+          "path": "data/project1/1-2.md"
+        },
+        {
+          "id": "1-3",
+          "title": "要件確認／齟齬調整",
+          "content": "Chốt hiểu đúng, xử lý lệch",
+          "video": "認識齟齬の調整",
+          "path": "data/project1/1-3.md"
+        }
       ]
     },
     {
       "group": "基本設計",
       "items": [
-        { "id": "2-1", "title": "基本設計レビュー", "content": "Review tài liệu BD", "video": "設計レビュー会話" },
-        { "id": "2-2", "title": "画面設計打ち合わせ", "content": "Confirm UI flow, screen transition", "video": "画面遷移の確認" },
-        { "id": "2-3", "title": "環境確認MTG", "content": "Dev/Test/Prod, CI/CD, quyền", "video": "環境構築の相談" }
+        {
+          "id": "2-1",
+          "title": "基本設計レビュー",
+          "content": "Review tài liệu BD",
+          "video": "設計レビュー会話",
+          "path": "data/project1/2-1.md"
+        },
+        {
+          "id": "2-2",
+          "title": "画面設計打ち合わせ",
+          "content": "Confirm UI flow, screen transition",
+          "video": "画面遷移の確認",
+          "path": "data/project1/2-2.md"
+        },
+        {
+          "id": "2-3",
+          "title": "環境確認MTG",
+          "content": "Dev/Test/Prod, CI/CD, quyền",
+          "video": "環境構築の相談",
+          "path": "data/project1/2-3.md"
+        }
       ]
     },
     {
       "group": "詳細設計",
       "items": [
-        { "id": "3-1", "title": "詳細設計レビュー", "content": "Review DDD, API仕様, ERD", "video": "詳細設計レビュー" },
-        { "id": "3-2", "title": "非機能要件確認", "content": "性能・監視・セキュリティ", "video": "非機能の確認" },
-        { "id": "3-3", "title": "設計Q&A", "content": "Hỏi đáp edge cases", "video": "設計Q&A" }
+        {
+          "id": "3-1",
+          "title": "詳細設計レビュー",
+          "content": "Review DDD, API仕様, ERD",
+          "video": "詳細設計レビュー",
+          "path": "data/project1/3-1.md"
+        },
+        {
+          "id": "3-2",
+          "title": "非機能要件確認",
+          "content": "性能・監視・セキュリティ",
+          "video": "非機能の確認",
+          "path": "data/project1/3-2.md"
+        },
+        {
+          "id": "3-3",
+          "title": "設計Q&A",
+          "content": "Hỏi đáp edge cases",
+          "video": "設計Q&A",
+          "path": "data/project1/3-3.md"
+        }
       ]
     },
     {
       "group": "実装／コーディング",
       "items": [
-        { "id": "4-1", "title": "実装方針確認", "content": "Coding standard, branch, commit", "video": "実装方針の合意" },
-        { "id": "4-2", "title": "技術課題共有", "content": "Vấn đề lib, version, kiến trúc", "video": "技術課題の共有" },
-        { "id": "4-3", "title": "追加要望対応", "content": "Scope change, re-estimate", "video": "追加要望の相談" },
-        { "id": "4-4", "title": "機能デモMTG", "content": "Demo chức năng vừa xong, lấy feedback KH", "video": "機能デモ" }
+        {
+          "id": "4-1",
+          "title": "実装方針確認",
+          "content": "Coding standard, branch, commit",
+          "video": "実装方針の合意",
+          "path": "data/project1/4-1.md"
+        },
+        {
+          "id": "4-2",
+          "title": "技術課題共有",
+          "content": "Vấn đề lib, version, kiến trúc",
+          "video": "技術課題の共有",
+          "path": "data/project1/4-2.md"
+        },
+        {
+          "id": "4-3",
+          "title": "追加要望対応",
+          "content": "Scope change, re-estimate",
+          "video": "追加要望の相談",
+          "path": "data/project1/4-3.md"
+        },
+        {
+          "id": "4-4",
+          "title": "機能デモMTG",
+          "content": "Demo chức năng vừa xong, lấy feedback KH",
+          "video": "機能デモ",
+          "path": "data/project1/4-4.md"
+        }
       ]
     },
     {
       "group": "テスト (UT/IT)",
       "items": [
-        { "id": "5-1", "title": "テストケースレビュー", "content": "Confirm test case design", "video": "テストケース確認" },
-        { "id": "5-2", "title": "テスト結果報告", "content": "Báo cáo UT/IT, tỉ lệ pass", "video": "テスト進捗報告" },
-        { "id": "5-3", "title": "不具合報告MTG", "content": "Bug report & fix request", "video": "不具合報告" }
+        {
+          "id": "5-1",
+          "title": "テストケースレビュー",
+          "content": "Confirm test case design",
+          "video": "テストケース確認",
+          "path": "data/project1/5-1.md"
+        },
+        {
+          "id": "5-2",
+          "title": "テスト結果報告",
+          "content": "Báo cáo UT/IT, tỉ lệ pass",
+          "video": "テスト進捗報告",
+          "path": "data/project1/5-2.md"
+        },
+        {
+          "id": "5-3",
+          "title": "不具合報告MTG",
+          "content": "Bug report & fix request",
+          "video": "不具合報告",
+          "path": "data/project1/5-3.md"
+        }
       ]
     },
     {
       "group": "UAT／受け入れ",
       "items": [
-        { "id": "6-1", "title": "UAT説明MTG", "content": "Giải thích UAT flow, rule", "video": "受け入れテスト案内" },
-        { "id": "6-2", "title": "UAT不具合対応", "content": "Họp khẩn khi bug nhiều", "video": "UATバグ対応" }
+        {
+          "id": "6-1",
+          "title": "UAT説明MTG",
+          "content": "Giải thích UAT flow, rule",
+          "video": "受け入れテスト案内",
+          "path": "data/project1/6-1.md"
+        },
+        {
+          "id": "6-2",
+          "title": "UAT不具合対応",
+          "content": "Họp khẩn khi bug nhiều",
+          "video": "UATバグ対応",
+          "path": "data/project1/6-2.md"
+        }
       ]
     },
     {
       "group": "リリース・運用",
       "items": [
-        { "id": "7-1", "title": "リリース前最終確認", "content": "Checklist final, rollback plan", "video": "リリース前確認" },
-        { "id": "7-2", "title": "リリース後レビュー", "content": "Post-mortem meeting", "video": "リリース振り返り" },
-        { "id": "7-3", "title": "保守・改善提案MTG", "content": "Đề xuất automation, AI", "video": "改善提案" }
+        {
+          "id": "7-1",
+          "title": "リリース前最終確認",
+          "content": "Checklist final, rollback plan",
+          "video": "リリース前確認",
+          "path": "data/project1/7-1.md"
+        },
+        {
+          "id": "7-2",
+          "title": "リリース後レビュー",
+          "content": "Post-mortem meeting",
+          "video": "リリース振り返り",
+          "path": "data/project1/7-2.md"
+        },
+        {
+          "id": "7-3",
+          "title": "保守・改善提案MTG",
+          "content": "Đề xuất automation, AI",
+          "video": "改善提案",
+          "path": "data/project1/7-3.md"
+        }
       ]
     },
     {
       "group": "プロセス系",
       "items": [
-        { "id": "8-1", "title": "進捗報告MTG（週次）", "content": "Weekly KPI, risk, next", "video": "週次進捗報告" },
-        { "id": "8-2", "title": "定例全体共有", "content": "Regular all-hands update", "video": "定例共有" },
-        { "id": "8-3", "title": "障害対応緊急MTG", "content": "HOTFIX, production bug", "video": "緊急対応会議" }
+        {
+          "id": "8-1",
+          "title": "進捗報告MTG（週次）",
+          "content": "Weekly KPI, risk, next",
+          "video": "週次進捗報告",
+          "path": "data/project1/8-1.md"
+        },
+        {
+          "id": "8-2",
+          "title": "定例全体共有",
+          "content": "Regular all-hands update",
+          "video": "定例共有",
+          "path": "data/project1/8-2.md"
+        },
+        {
+          "id": "8-3",
+          "title": "障害対応緊急MTG",
+          "content": "HOTFIX, production bug",
+          "video": "緊急対応会議",
+          "path": "data/project1/8-3.md"
+        }
       ]
     },
     {
       "group": "面接",
       "items": [
-        { "id": "9-1", "title": "自己紹介／自己PR", "content": "Background, thế mạnh", "video": "面接の自己紹介" },
-        { "id": "9-2", "title": "経験・スキル説明", "content": "Dự án tiêu biểu, tech skill", "video": "スキル説明" }
+        {
+          "id": "9-1",
+          "title": "自己紹介／自己PR",
+          "content": "Background, thế mạnh",
+          "video": "面接の自己紹介",
+          "path": "data/project1/9-1.md"
+        },
+        {
+          "id": "9-2",
+          "title": "経験・スキル説明",
+          "content": "Dự án tiêu biểu, tech skill",
+          "video": "スキル説明",
+          "path": "data/project1/9-2.md"
+        }
       ]
     }
   ]
