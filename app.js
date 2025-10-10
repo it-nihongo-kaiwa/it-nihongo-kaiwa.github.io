@@ -8,6 +8,9 @@
   const detailControls = document.getElementById('detail-controls');
   const btnVN = document.getElementById('btn-vn');
 
+  // Ensure detail-controls is hidden by default
+  if (detailControls) detailControls.hidden = true;
+
   let outlineGroups = null; // [{group, items:[{id, topic, path, available}]}]
   let projects = null; // [{id, title, description, icon, groups}]
 
@@ -247,6 +250,27 @@
       const hasLessons = project.groups && project.groups.length > 0 && 
                         project.groups.some(group => group.items && group.items.length > 0);
       
+      // Build project info HTML
+      let projectInfoHTML = '';
+      if (project.summary) {
+        projectInfoHTML = `
+          <div class="project-info">
+            <div class="info-item">
+              <span class="info-label">Scope:</span>
+              <span class="info-value">${escapeHtml(project.summary.scope)}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Duration:</span>
+              <span class="info-value">${escapeHtml(project.summary.duration)}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Team:</span>
+              <span class="info-value">${escapeHtml(project.summary.team)}</span>
+            </div>
+          </div>
+        `;
+      }
+
       if (hasLessons) {
         card.innerHTML = `
         <a class="project-link" href="#project/${project.id}" aria-label="Mở dự án ${escapeHtml(project.title)}">
@@ -256,6 +280,7 @@
             <span class="project-level level-${project.level?.toLowerCase() || 'beginner'}">${project.level || 'Beginner'}</span>
           </div>
           <p class="project-desc">${escapeHtml(project.description)}</p>
+          ${projectInfoHTML}
           <span class="cta">Xem bài học →</span>
         </a>
         `;
@@ -268,6 +293,7 @@
               <span class="project-level level-${project.level?.toLowerCase() || 'beginner'}">${project.level || 'Beginner'}</span>
             </div>
             <p class="project-desc">${escapeHtml(project.description)}</p>
+            ${projectInfoHTML}
             <span class="badge-draft">Sắp có</span>
           </div>
         `;
@@ -505,11 +531,25 @@
     try { if (window.populateOutlineViewCounts) window.populateOutlineViewCounts(); } catch {}
   }
 
+  function getProjectIdFromPath(path) {
+    const projectMatch = path.match(/\/project(\d+)\//);
+    return projectMatch ? projectMatch[1] : '1';
+  }
+
+
   async function renderLesson(path) {
     outlineView.hidden = true;
-    if (detailControls) detailControls.hidden = false;
     markdownView.hidden = false;
     markdownView.innerHTML = '<p class="loading">Loading lesson…</p>';
+    
+    // Clear any existing back buttons from project lessons
+    const existingBackButtons = markdownView.querySelectorAll('.back-button');
+    existingBackButtons.forEach(btn => btn.remove());
+    
+    // Also clear from outlineView to be safe
+    const outlineBackButtons = outlineView.querySelectorAll('.back-button');
+    outlineBackButtons.forEach(btn => btn.remove());
+    
     try {
       const text = await fetchText(path);
       const processed = preprocessMarkdown(text);
@@ -518,6 +558,51 @@
         markdownView.innerHTML = html;
       } else {
         markdownView.textContent = text;
+      }
+      
+      // Add back to project button (only if lesson is from a project)
+      const projectId = getProjectIdFromPath(path);
+      if (projectId && path.includes('/project')) {
+        const backButton = document.createElement('div');
+        backButton.className = 'back-button';
+        backButton.innerHTML = `
+          <a href="#project/${projectId}" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Quay lại dự án
+          </a>
+        `;
+        
+        // Move detail-controls into back-button container
+        if (detailControls) {
+          backButton.appendChild(detailControls);
+          detailControls.hidden = false;
+        } else {
+          // Create detail-controls if not found
+          const newDetailControls = document.createElement('section');
+          newDetailControls.className = 'detail-controls';
+          newDetailControls.innerHTML = `
+            <button id="btn-vn" class="icon-btn active" aria-pressed="true" title="Hiển/ẩn tiếng Việt (VN)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          `;
+          backButton.appendChild(newDetailControls);
+          
+          // Re-attach event listener
+          const vnBtn = newDetailControls.querySelector('#btn-vn');
+          if (vnBtn) {
+            vnBtn.addEventListener('click', () => {
+              document.body.classList.toggle('vn-hidden');
+              vnBtn.classList.toggle('active');
+              vnBtn.setAttribute('aria-pressed', vnBtn.classList.contains('active'));
+            });
+          }
+        }
+        
+        markdownView.insertBefore(backButton, markdownView.firstChild);
       }
       enhanceLessonContent();
       refineVocabDisplay();
@@ -595,21 +680,46 @@
         }
       }
     });
-  }function refineVocabDisplay() {
+  }  function refineVocabDisplay() {
     const lists = markdownView ? markdownView.querySelectorAll('.vocab-list') : [];
     lists.forEach(ul => {
       ul.querySelectorAll('li').forEach(li => {
         if (li.dataset.vrefined === '1') return;
         const raw = (li.textContent || '').trim();
-        const m = raw.match(/^(.*?)\s*[\-– E E ]\s*(.+)$/); // allow dash/colon without strict spacing
+        
+        // Try to match pattern with hiragana in parentheses: 漢字（ひらがな）| meaning
+        let m = raw.match(/^(.+?)\s*[（(]([^）)]+)[）)]\s*\|\s*(.+)$/);
         if (m) {
-          const left = m[1].trim();
-          const right = m[2].trim();
+          const jpTerm = m[1].trim();
+          const hiragana = m[2].trim();
+          const meaning = m[3].trim();
           li.classList.remove('v-head');
-          li.innerHTML = `<span class="v-term jp" lang="ja">${escapeHtml(left)}</span><span class="v-mean" lang="vi">${escapeHtml(right)}</span>`;
-        } else if (!li.querySelector('.v-term')) {
-          li.classList.add('v-head');
-          li.innerHTML = `<span class="v-term jp" lang="ja">${escapeHtml(raw)}</span>`;
+          // Style English words in meaning
+          const styledMeaning = meaning.replace(/\b([a-zA-Z]+(?:\s+[a-zA-Z]+)*)\b/g, '<span class="english">$1</span>');
+          li.innerHTML = `<span class="v-term jp" lang="ja">${escapeHtml(jpTerm)} <span class="hiragana">（${escapeHtml(hiragana)}）</span></span><span class="v-mean" lang="vi">${styledMeaning}</span>`;
+        } else {
+          // Try to match pattern: term | meaning (where term can be Japanese, English, or abbreviation)
+          m = raw.match(/^(.+?)\s*\|\s*(.+)$/);
+          if (m) {
+            const term = m[1].trim();
+            const meaning = m[2].trim();
+            li.classList.remove('v-head');
+            
+            // Check if term is likely English/abbreviation (contains only ASCII characters)
+            const isEnglish = /^[a-zA-Z\s\-\.]+$/.test(term);
+            const termClass = isEnglish ? 'english-term' : 'jp-term';
+            const termLang = isEnglish ? 'en' : 'ja';
+            
+            // Style English words in meaning
+            const styledMeaning = meaning.replace(/\b([a-zA-Z]+(?:\s+[a-zA-Z]+)*)\b/g, '<span class="english">$1</span>');
+            li.innerHTML = `<span class="v-term ${termClass}" lang="${termLang}">${escapeHtml(term)}</span><span class="v-mean" lang="vi">${styledMeaning}</span>`;
+          } else {
+            // Fallback: treat as header
+            if (!li.querySelector('.v-term')) {
+              li.classList.add('v-head');
+              li.innerHTML = `<span class="v-term jp" lang="ja">${escapeHtml(raw)}</span>`;
+            }
+          }
         }
         li.dataset.vrefined = '1';
       });

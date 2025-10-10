@@ -3,19 +3,19 @@
     {
       "id": "1",
       "title": "ファイル管理機能",
-      "description": "Hệ thống quản lý file với tìm kiếm, phân quyền và tích hợp user management. Dự án 2 tháng với team 5 người (3 dev, 1 tester, 1 BrSE).",
+      "description": "Hệ thống quản lý file với tìm kiếm, phân quyền và tích hợp user management.",
       "icon": "gi-folder",
       "level": "Beginner",
       "summary": {
-        "scope": "ファイル管理機能 (File Management System)",
+        "scope": "BD, DD, Coding, UT, UAT, Release",
         "duration": "2ヶ月 (2 months)",
         "team": "5名 (3 dev, 1 tester, 1 BrSE)",
         "features": [
-          "ファイル検索・一覧表示 (File search & listing)",
-          "アクセス権限管理 (Access control)",
-          "アップロード・ダウンロード (Upload/Download)",
-          "タグ管理 (Tag management)",
-          "権限変更履歴 (Permission change history)"
+          "ファイル検索・一覧表示",
+          "アクセス権限管理",
+          "アップロード・ダウンロード",
+          "タグ管理",
+          "権限変更履歴"
         ],
         "tech": "React + TypeScript, Node.js, PostgreSQL, AWS S3, Docker",
         "phases": [
@@ -281,19 +281,19 @@
     {
       "id": "2",
       "title": "Eコマースシステム",
-      "description": "Hệ thống thương mại điện tử với thanh toán, quản lý đơn hàng và tích hợp API. Dự án 3 tháng với team 6 người (4 dev, 1 tester, 1 BrSE).",
+      "description": "Hệ thống thương mại điện tử với thanh toán, quản lý đơn hàng và tích hợp API.",
       "icon": "gi-shopping-cart",
       "level": "Intermediate",
       "summary": {
-        "scope": "Eコマースシステム (E-commerce System)",
+        "scope": "BD, DD, Coding, UT, UAT, Release",
         "duration": "3ヶ月 (3 months)",
         "team": "6名 (4 dev, 1 tester, 1 BrSE)",
         "features": [
-          "商品管理 (Product management)",
-          "注文処理 (Order processing)",
-          "決済システム (Payment system)",
-          "在庫管理 (Inventory management)",
-          "顧客管理 (Customer management)"
+          "商品管理",
+          "注文処理",
+          "決済システム",
+          "在庫管理",
+          "顧客管理"
         ],
         "tech": "React + TypeScript, Node.js, PostgreSQL, Stripe API, Docker",
         "phases": [
