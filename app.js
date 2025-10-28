@@ -39,6 +39,11 @@
     return (m ? m[1].trim() : fallback).replace(/\s+$/, '');
   }
 
+  // Small DOM helpers
+  function setLessonHref(link, lessonId) {
+    try { if (link && lessonId) link.setAttribute('href', `#lesson/${lessonId}`); } catch {}
+  }
+
   // VN toggle state
   function initVNToggle() {
     const saved = localStorage.getItem('showVN');
@@ -232,7 +237,7 @@
     if (!outlineView) return;
     if (!projects || projects.length === 0) {
       const hint = location.protocol === 'file:'
-        ? 'Đang mềEtrực tiếp file (file://). Hãy dùng máy chủ tĩnh hoặc GitHub Pages đềEcho phép fetch().' : 'Không tìm thấy dự án. Thêm projects trong data/outline.json.';
+        ? 'Đang mở trực tiếp file (file://). Hãy dùng máy chủ tĩnh hoặc GitHub Pages để cho phép fetch().' : 'Không tìm thấy dự án. Thêm projects trong data/outline.json.';
       outlineView.innerHTML = `<p class="loading">${hint}</p>`;
       return;
     }
@@ -414,20 +419,11 @@
             <span class="badge-draft">Sắp có</span>
           `;
         }
-        // Add view badge into available cards (if link exists)
         try {
           const link = card.querySelector('.card-link');
-          if (link) {
-            // Only apply legacy lesson routing for project1
-            if (projectId === '1') {
-              const id = (it && it.id) ? String(it.id) : String((it && it.path || '').split('/').pop() || '').replace(/\.md$/i, '');
-              try { link.setAttribute('href', `#lesson/${id}`); } catch {}
-              const meta = document.createElement('div');
-              meta.className = 'outline-meta';
-              meta.innerHTML = `<span class="views" data-lesson-id="${escapeHtml(id)}">👁 <span class=\"num\">—</span></span>`;
-              const cta = link.querySelector('.cta');
-              if (cta) link.insertBefore(meta, cta); else link.appendChild(meta);
-            }
+          if (link && projectId === '1') {
+            const id = (it && it.id) ? String(it.id) : String((it && it.path || '').split('/').pop() || '').replace(/\.md$/i, '');
+            setLessonHref(link, id);
           }
         } catch {}
         grid.appendChild(card);
@@ -438,14 +434,13 @@
     
     outlineView.innerHTML = '';
     outlineView.appendChild(frag);
-    try { if (window.populateOutlineViewCounts) window.populateOutlineViewCounts(); } catch {}
   }
 
   function renderOutline() {
     if (!outlineView) return;
     if (!outlineGroups && lessons.length === 0) {
       const hint = location.protocol === 'file:'
-        ? 'Đang mềEtrực tiếp file (file://). Hãy dùng máy chủ tĩnh hoặc GitHub Pages đềEcho phép fetch().' : 'Không tìm thấy nội dung. Thêm md trong data/ hoặc tạo data/lessons.json.';
+        ? 'Đang mở trực tiếp file (file://). Hãy dùng máy chủ tĩnh hoặc GitHub Pages để cho phép fetch().' : 'Không tìm thấy nội dung. Thêm md trong data/ hoặc tạo data/lessons.json.';
       outlineView.innerHTML = `<p class="loading">${hint}</p>`;
       return;
     }
@@ -476,17 +471,11 @@
               <span class="badge-draft">Sắp có</span>
             `;
           }
-          // Add view badge into available cards (if link exists)
           try {
             const link = card.querySelector('.card-link');
             if (link) {
               const id = (it && it.id) ? String(it.id) : String((it && it.path || '').split('/').pop() || '').replace(/\.md$/i, '');
-              try { link.setAttribute('href', `#lesson/${id}`); } catch {}
-              const meta = document.createElement('div');
-              meta.className = 'outline-meta';
-              meta.innerHTML = `<span class="views" data-lesson-id="${escapeHtml(id)}">👁 <span class=\"num\">—</span></span>`;
-              const cta = link.querySelector('.cta');
-              if (cta) link.insertBefore(meta, cta); else link.appendChild(meta);
+              setLessonHref(link, id);
             }
           } catch {}
           grid.appendChild(card);
@@ -496,7 +485,6 @@
       }
       outlineView.innerHTML = '';
       outlineView.appendChild(frag);
-      try { if (window.populateOutlineViewCounts) window.populateOutlineViewCounts(); } catch {}
       return;
     }
     // Fallback: discovered lessons flat grid
@@ -511,24 +499,17 @@
           <span class="cta">Mở bài →</span>
         </a>
       `;
-      // Add view badge for discovered lessons
       try {
         const link = card.querySelector('.card-link');
         if (link) {
           const id = (l.path.split('/').pop() || '').replace(/\.md$/i, '');
-          try { link.setAttribute('href', `#lesson/${id}`); } catch {}
-          const meta = document.createElement('div');
-          meta.className = 'outline-meta';
-          meta.innerHTML = `<span class="views" data-lesson-id="${escapeHtml(id)}">👁 <span class=\"num\">—</span></span>`;
-          const cta = link.querySelector('.cta');
-          if (cta) link.insertBefore(meta, cta); else link.appendChild(meta);
+          setLessonHref(link, id);
         }
       } catch {}
       grid.appendChild(card);
     }
     outlineView.innerHTML = '';
     outlineView.appendChild(grid);
-    try { if (window.populateOutlineViewCounts) window.populateOutlineViewCounts(); } catch {}
   }
 
   function getProjectIdFromPath(path) {
@@ -607,13 +588,7 @@
       enhanceLessonContent();
       refineVocabDisplay();
       await insertLessonVideo(path);
-      // View counter: show cached immediately, update after network
-      try {
-        const _id = (path.split('/').pop() || '').replace(/\.md$/i, '');
-        const _cached = (window.cachedViewCount ? window.cachedViewCount(_id) : 0);
-        renderDetailViewCount(_id, _cached);
-        hitViewCount(_id).then(c => { try { renderDetailViewCount(_id, c); } catch {} }).catch(()=>{});
-      } catch {}
+      
       const baseName = path.split('/').pop() || 'lesson';
       document.title = `IT Nihongo Kaiwa — ${baseName.replace(/\.md$/i, '')}`;
       // SEO dynamic fallback if helpers available
@@ -901,151 +876,7 @@
   document.addEventListener('DOMContentLoaded', async () => {
     initVNToggle();
     await loadData();
-    try {
-      // Seed initial view counts from outline (if provided)
-      if (window && Array.isArray(outlineGroups)) {
-        const seed = {};
-        for (const g of outlineGroups) {
-          for (const it of (g.items || [])) {
-            seed[it.id] = Number(it.views || 0) || 0;
-          }
-        }
-        window.__seedViews = seed;
-      }
-    } catch {}
     if (!window.location.hash) window.location.hash = '#list';
     route();
   });
 })();
-
-// --- Views counter (CountAPI + local fallback) ---
-(function(){
-  window.lessonIdFromPath = function(p){
-    const base = (p || '').split('/').pop() || '';
-    return base.replace(/\.md$/i, '');
-  }
-
-  const VIEW_NS = 'it-nihongo-kaiwa';
-  async function apiJSON(url) {
-    const res = await fetch(url, { cache: 'no-cache' });
-    if (!res.ok) throw new Error(String(res.status));
-    return res.json();
-  }
-
-  // SEO helpers (safe no-ops if not used)
-  window.setDynamicSEO = function({ title, description, url }){
-    try {
-      if (title) document.title = title;
-      const set = (selector, attr, val) => {
-        let el = document.querySelector(selector);
-        if (!el) {
-          if (selector.startsWith('meta[name="')) { el = document.createElement('meta'); el.setAttribute('name', selector.match(/meta\[name=\"([^\"]+)/)[1]); }
-          else if (selector.startsWith('meta[property="')) { el = document.createElement('meta'); el.setAttribute('property', selector.match(/meta\[property=\"([^\"]+)/)[1]); }
-          else if (selector.startsWith('link[rel="canonical"')) { el = document.createElement('link'); el.setAttribute('rel', 'canonical'); }
-          if (el) document.head.appendChild(el);
-        }
-        if (el) el.setAttribute(attr, val);
-      };
-      if (description) {
-        set('meta[name="description"]', 'content', description);
-        set('meta[property="og:description"]', 'content', description);
-        set('meta[name="twitter:description"]', 'content', description);
-      }
-      if (title) {
-        set('meta[property="og:title"]', 'content', title);
-        set('meta[name="twitter:title"]', 'content', title);
-      }
-      if (url) {
-        set('meta[property="og:url"]', 'content', url);
-        set('link[rel="canonical"]', 'href', url);
-      }
-    } catch {}
-  }
-
-  window.summarizeText = function(md, limit){
-    try {
-      const t = String(md || '')
-        .replace(/`{3}[\s\S]*?`{3}/g, ' ')
-        .replace(/`[^`]+`/g, ' ')
-        .replace(/^>.*$/gm, ' ')
-        .replace(/\!\[[^\]]*\]\([^)]*\)/g, ' ')
-        .replace(/\[[^\]]*\]\([^)]*\)/g, ' ')
-        .replace(/[#*_>\-]+/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-      return t.length > limit ? t.slice(0, limit - 1) + '…' : t;
-    } catch { return ''; }
-  }
-
-  // Cached count without waiting for network (seed + local)
-  window.cachedViewCount = function(id){
-    const seed = (window.__seedViews && window.__seedViews[id]) ? Number(window.__seedViews[id]) : 0;
-    return seed + lsGet(id);
-  }
-
-  function lsGet(id){
-    try { return parseInt(localStorage.getItem('vc::'+id) || '0', 10) || 0; } catch { return 0; }
-  }
-  function lsSet(id, v){ try { localStorage.setItem('vc::'+id, String(v)); } catch {} }
-
-  window.getViewCount = async function(id){
-    try {
-      const data = await apiJSON(`https://api.countapi.xyz/get/${encodeURIComponent(VIEW_NS)}/${encodeURIComponent(id)}`);
-      if (typeof data?.value === 'number') return data.value;
-    } catch {}
-    const seed = (window.__seedViews && window.__seedViews[id]) ? Number(window.__seedViews[id]) : 0;
-    return seed + lsGet(id);
-  }
-
-  window.hitViewCount = async function(id){
-    try {
-      const data = await apiJSON(`https://api.countapi.xyz/hit/${encodeURIComponent(VIEW_NS)}/${encodeURIComponent(id)}`);
-      if (typeof data?.value === 'number') { lsSet(id, data.value); return data.value; }
-    } catch {}
-    const v = lsGet(id) + 1; lsSet(id, v);
-    const seed = (window.__seedViews && window.__seedViews[id]) ? Number(window.__seedViews[id]) : 0;
-    return seed + v;
-  }
-
-  window.renderDetailViewCount = function(id, count){
-    const root = document.getElementById('markdown-view');
-    if (!root) return;
-    let badge = root.querySelector('.view-stats');
-    if (badge) {
-      const num = badge.querySelector('.num');
-      if (num) num.textContent = String(count);
-      else badge.textContent = `👁 ${count} lượt xem`;
-      return;
-    }
-    const target = root.querySelector('h1');
-    badge = document.createElement('div');
-    badge.className = 'view-stats';
-    badge.innerHTML = `👁 <span class="num">${count}</span> lượt xem`;
-    if (target && target.parentNode) target.insertAdjacentElement('afterend', badge);
-    else root.insertBefore(badge, root.firstChild);
-  }
-
-  window.populateOutlineViewCounts = async function(){
-    const els = document.querySelectorAll('.views[data-lesson-id]');
-    const tasks = [];
-    els.forEach(el => {
-      const id = el.getAttribute('data-lesson-id');
-      // Set cached value immediately
-      try {
-        const cached = window.cachedViewCount ? window.cachedViewCount(id) : 0;
-        const num1 = el.querySelector('.num');
-        if (num1) num1.textContent = cached; else el.textContent = `👁 ${cached}`;
-      } catch {}
-      // Refresh from network in background
-      tasks.push(getViewCount(id).then(v => {
-        const num2 = el.querySelector('.num');
-        if (num2) num2.textContent = v; else el.textContent = `👁 ${v}`;
-      }).catch(()=>{}));
-    });
-    await Promise.allSettled(tasks);
-  }
-})();
-
-
-
-
