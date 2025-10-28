@@ -279,12 +279,16 @@
       if (hasLessons) {
         card.innerHTML = `
         <a class="project-link" href="#project/${project.id}" aria-label="Mở dự án ${escapeHtml(project.title)}">
-          <div class="project-icon ${iconClass}">${groupIconSVG(iconClass)}</div>
           <div class="project-header">
-            <h3 class="project-title">${escapeHtml(project.title)}</h3>
-            <span class="project-level level-${project.level?.toLowerCase() || 'beginner'}">${project.level || 'Beginner'}</span>
+            <div class="project-icon ${iconClass}">${groupIconSVG(iconClass)}</div>
+            <div class="project-info-compact">
+              <div class="project-title-row">
+                <h3 class="project-title">${escapeHtml(project.title)}</h3>
+                <span class="project-level level-${project.level?.toLowerCase() || 'beginner'}">${project.level || 'Beginner'}</span>
+              </div>
+              <p class="project-desc">${escapeHtml(project.description)}</p>
+            </div>
           </div>
-          <p class="project-desc">${escapeHtml(project.description)}</p>
           ${projectInfoHTML}
           <span class="cta">Xem bài học →</span>
         </a>
@@ -292,12 +296,16 @@
       } else {
         card.innerHTML = `
           <div class="project-link">
-            <div class="project-icon ${iconClass}">${groupIconSVG(iconClass)}</div>
             <div class="project-header">
-              <h3 class="project-title">${escapeHtml(project.title)}</h3>
-              <span class="project-level level-${project.level?.toLowerCase() || 'beginner'}">${project.level || 'Beginner'}</span>
+              <div class="project-icon ${iconClass}">${groupIconSVG(iconClass)}</div>
+              <div class="project-info-compact">
+                <div class="project-title-row">
+                  <h3 class="project-title">${escapeHtml(project.title)}</h3>
+                  <span class="project-level level-${project.level?.toLowerCase() || 'beginner'}">${project.level || 'Beginner'}</span>
+                </div>
+                <p class="project-desc">${escapeHtml(project.description)}</p>
+              </div>
             </div>
-            <p class="project-desc">${escapeHtml(project.description)}</p>
             ${projectInfoHTML}
             <span class="badge-draft">Sắp có</span>
           </div>
@@ -337,7 +345,7 @@
     
     // Add project header
     const header = document.createElement('div');
-    header.className = 'project-header';
+    header.className = 'project-header detail-header';
     const iconClass = project.icon || 'gi-default';
     
     // Build summary info if available

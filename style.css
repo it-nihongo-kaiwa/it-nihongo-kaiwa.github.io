@@ -237,43 +237,91 @@ a:hover { color: var(--gold-2); }
 
 @media (max-width: 768px) {
   .hero-section {
-    padding: 60px 0;
-    margin: 0 0 40px;
+    padding: 40px 0 30px;
+    margin: 0 0 30px;
+  }
+  
+  .hero-title {
+    font-size: clamp(2rem, 8vw, 3rem);
+    margin-bottom: 12px;
+  }
+  
+  .hero-subtitle {
+    font-size: clamp(1.1rem, 5vw, 1.4rem);
+    margin-bottom: 12px;
+  }
+  
+  .hero-description {
+    font-size: 0.95rem;
+    padding: 0 12px;
   }
   
   .hero-features {
     grid-template-columns: 1fr;
-    gap: 20px;
-    margin: 0 0 32px;
+    gap: 16px;
+    margin: 0 0 24px;
+    padding: 0 8px;
   }
   
   .feature-card {
-    padding: 24px 20px;
+    padding: 20px 16px;
   }
   
   .feature-icon {
-    width: 56px;
-    height: 56px;
-    margin-bottom: 16px;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 14px;
   }
   
   .feature-content h3 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
   
   .feature-content p {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+  }
+  
+  .feature-badge {
+    font-size: 0.75rem;
+    padding: 5px 12px;
   }
   
   .hero-cta {
     flex-direction: column;
     align-items: center;
+    padding: 0 8px;
   }
   
   .cta-button {
     width: 100%;
-    max-width: 280px;
+    max-width: 320px;
     justify-content: center;
+    padding: 14px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 30px 0 20px;
+  }
+  
+  .hero-features {
+    gap: 12px;
+    margin: 0 0 20px;
+  }
+  
+  .feature-card {
+    padding: 16px 14px;
+  }
+  
+  .feature-content h3 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  
+  .feature-content p {
+    font-size: 0.8rem;
+    margin-bottom: 10px;
   }
 }
 
@@ -311,6 +359,10 @@ a:hover { color: var(--gold-2); }
 @media (max-width: 520px) {
   .site-title { display: none; }
   .logo { width: 44px; height: 44px; }
+  .header-inner { 
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 }
 .topnav { display: flex; gap: 12px; align-items: center; }
 .toplink { color: var(--ink); text-decoration: none; padding: 8px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); }
@@ -387,6 +439,21 @@ a:hover { color: var(--gold-2); }
 #markdown-view .vocab-list li { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; padding: 4px 0 4px 10px; border-left: 3px solid rgba(36,179,255,0.40); }
 #markdown-view .vocab-list .v-term { font-family: "Noto Sans JP", Roboto, sans-serif; font-weight: 700; }
 #markdown-view .vocab-list .v-mean { color: var(--muted); }
+
+@media (max-width: 640px) {
+  #markdown-view .vocab-list li {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding-left: 0;
+    border-left: 0;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  #markdown-view .vocab-list li:first-child {
+    border-top: none;
+  }
+}
 
 #markdown-view .hiragana { 
   color: var(--cyan) !important; 
@@ -471,6 +538,59 @@ a:hover { color: var(--gold-2); }
 .site-footer { padding: 18px 0 32px; color: var(--muted); text-align: center; }
 /* Outline view */
 .outline-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+
+@media (max-width: 640px) {
+  .outline-grid { 
+    grid-template-columns: 1fr; 
+    gap: 12px; 
+  }
+  
+  .outline-card {
+    min-height: auto;
+    padding: 14px;
+  }
+  
+  .outline-title {
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+  }
+  
+  .outline-desc {
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+  
+  .outline-meta {
+    font-size: 0.8rem;
+  }
+  
+  .outline-group {
+    font-size: 0.9rem;
+  }
+  
+  .group-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .project-summary {
+    padding: 16px;
+  }
+  
+  .summary-row {
+    gap: 12px;
+  }
+  
+  .summary-label,
+  .summary-value {
+    font-size: 0.85rem;
+  }
+  
+  .feature-tag {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+  }
+}
 .outline-card { position: relative; padding: 16px; border-radius: 16px; border: 1px solid rgba(180,200,230,0.12); background: linear-gradient(180deg, rgba(15,36,57,0.82), rgba(18,43,69,0.78)); min-height: 130px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
 .outline-card.available { border-color: rgba(63,195,255,0.28); background: linear-gradient(180deg, rgba(20,48,73,0.86), rgba(24,54,82,0.82)); }
 .outline-card:hover { border-color: rgba(255,255,255,0.30); transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,0.35); }
@@ -540,6 +660,84 @@ a:hover { color: var(--gold-2); }
   .avatar { width: 36px; height: 36px; font-size: 0.8rem; }
 }
 
+@media (max-width: 640px) {
+  .content-inner { 
+    padding: 16px 12px; 
+  }
+  
+  .dialog-row {
+    flex-direction: column;
+  }
+  
+  .dialog-row.left .bubble,
+  .dialog-row.right .bubble {
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  .dialog-legend {
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.85rem;
+  }
+  
+  .bubble {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  
+  .bubble .jp {
+    font-size: 0.95em;
+  }
+  
+  .bubble .vn {
+    font-size: 0.85em;
+    margin-top: 8px;
+  }
+  
+  #markdown-view h1 { 
+    font-size: 1.4rem; 
+    margin-bottom: 12px;
+  }
+  
+  #markdown-view h2 { 
+    font-size: 1.15rem; 
+    margin: 20px 0 10px;
+  }
+  
+  #markdown-view h3 { 
+    font-size: 1.05rem; 
+    margin: 16px 0 8px;
+  }
+  
+  .icon-btn {
+    width: 42px;
+    height: 42px;
+  }
+  
+  .detail-controls {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .back-link {
+    font-size: 0.85rem;
+    padding: 10px 14px;
+  }
+  
+  .btn {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+  
+  .lesson-video-player {
+    max-width: 100%;
+    max-height: 40vh;
+  }
+}
+
 /* --- Soft overrides for lesson sections (keep it minimal) --- */
 #markdown-view .lesson-video { margin: 8px 0 14px; display: flex; justify-content: center; }
 #markdown-view .lesson-video-player {
@@ -605,17 +803,38 @@ a:hover { color: var(--gold-2); }
   gap: 2px;
 }
 
+.project-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 0;
+}
+
 .project-icon {
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 56px;
   height: 56px;
   border-radius: 12px;
-  margin-bottom: 20px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   transition: all 0.2s ease;
+}
+
+.project-info-compact {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.project-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .project-card:hover .project-icon {
@@ -640,13 +859,6 @@ a:hover { color: var(--gold-2); }
   color: #2563eb;
 }
 
-.project-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  gap: 12px;
-}
 
 .project-title {
   font-size: 1.4rem;
@@ -971,7 +1183,7 @@ a:hover { color: var(--gold-2); }
   border-color: rgba(36,179,255,0.2);
 }
 
-.project-header {
+.project-header.detail-header {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -982,7 +1194,7 @@ a:hover { color: var(--gold-2); }
   border-radius: 12px;
 }
 
-.project-header .project-icon {
+.project-header.detail-header .project-icon {
   width: 56px;
   height: 56px;
   margin-bottom: 0;
@@ -1004,9 +1216,23 @@ a:hover { color: var(--gold-2); }
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
+  .site-header {
+    padding: 12px 0;
+  }
+  
+  .site-title {
+    font-size: clamp(0.95rem, 4vw, 1.2rem);
+  }
+  
+  .toplink {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+  
   .projects-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+    padding: 12px 0;
   }
   
   .project-card {
@@ -1014,18 +1240,42 @@ a:hover { color: var(--gold-2); }
   }
   
   .project-link {
-    padding: 20px;
+    padding: 20px 16px;
   }
   
   .project-header {
-    flex-direction: column;
-    text-align: center;
     gap: 12px;
   }
   
-  .project-header .project-icon {
+  .project-icon {
     width: 48px;
     height: 48px;
+  }
+  
+  .project-title-row {
+    gap: 8px;
+  }
+  
+  .project-title {
+    font-size: 1.15rem;
+  }
+  
+  .project-desc {
+    font-size: 0.85rem;
+  }
+  
+  .project-info {
+    font-size: 0.85rem;
+  }
+  
+  .info-item {
+    font-size: 0.8rem;
+    padding: 8px 0;
+  }
+  
+  .info-label,
+  .info-value {
+    font-size: 0.8rem;
   }
 }
 
