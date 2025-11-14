@@ -1,5 +1,24 @@
 ﻿import { escapeHtml } from './utils.js';
 
+const TIMECODE_PATTERN = /^\s*\[(\d{1,2}:\d{2}(?::\d{2})?(?:\.\d{1,3})?)\]\s*(.+)$/;
+
+function extractTimestampPayload(text) {
+  if (!text) return null;
+  const match = text.match(TIMECODE_PATTERN);
+  if (!match) return null;
+  const seconds = toSeconds(match[1]);
+  if (!Number.isFinite(seconds)) return null;
+  return { seconds, text: match[2] };
+}
+
+function toSeconds(token) {
+  const parts = token.split(':').map(Number);
+  if (parts.some(Number.isNaN)) return null;
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  return null;
+}
+
 export function preprocessMarkdown(src) {
   const lines = src.split(/\r?\n/);
   const out = [];
@@ -18,8 +37,14 @@ export function preprocessMarkdown(src) {
     const dialogMatch = line.match(/^\s*\*\*([^*]+?):\*\*\s*(.+)$/);
     if (dialogMatch) {
       const name = dialogMatch[1].trim();
-      const jp = dialogMatch[2].trim();
+      let jp = dialogMatch[2].trim();
       let vn = '';
+      let timestamp = null;
+      const stamp = extractTimestampPayload(jp);
+      if (stamp) {
+        jp = stamp.text.trim();
+        timestamp = stamp.seconds;
+      }
       if (i + 1 < lines.length) {
         const vnMatch = lines[i + 1].match(/^\s*\*(.+)\*\s*$/);
         if (vnMatch) {
@@ -41,8 +66,9 @@ export function preprocessMarkdown(src) {
       let side = left ? 'left' : 'right';
       if (role === 'kh') side = 'left';
       if (role === 'brse') side = 'right';
+      const timeAttr = timestamp !== null ? ` data-time="${timestamp}"` : '';
       out.push(
-        `<div class="dialog-row ${side} role-${role}">` +
+        `<div class="dialog-row ${side} role-${role}"${timeAttr}>` +
           '<div class="bubble">' +
             `<div class="jp" lang="ja">${escapeHtml(jp)}</div>` +
             (vn ? `<div class="vn" lang="vi">${escapeHtml(vn)}</div>` : '') +
@@ -55,11 +81,19 @@ export function preprocessMarkdown(src) {
 
     const jpLine = line.match(/^\s*JP:\s*(.*)$/);
     if (jpLine) {
+      let jpText = jpLine[1];
+      let timestamp = null;
+      const stamp = extractTimestampPayload(jpText);
+      if (stamp) {
+        jpText = stamp.text.trim();
+        timestamp = stamp.seconds;
+      }
+      const timeAttr = timestamp !== null ? ` data-time="${timestamp}"` : '';
       if (!inDialog) {
         out.push('<div class="dialog">');
         inDialog = true;
       }
-      out.push(`<div class="dialog-row left"><div class="bubble"><div class="jp" lang="ja">${escapeHtml(jpLine[1])}</div></div></div>`);
+      out.push(`<div class="dialog-row left"${timeAttr}><div class="bubble"><div class="jp" lang="ja">${escapeHtml(jpText)}</div></div></div>`);
       left = false;
       continue;
     }
