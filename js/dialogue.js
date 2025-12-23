@@ -28,7 +28,7 @@ export function preprocessMarkdown(src) {
   const closeDialog = () => {
     if (!inDialog) return;
     out.push('</div>');
-    out.push('<div class="dialog-legend"><span class="legend-item"><span class="chip chip-kh"></span>KH (Khach hang)</span><span class="legend-item"><span class="chip chip-brse"></span>BrSE</span></div>');
+    out.push('<div class="dialog-legend"><span class="legend-item"><span class="chip chip-kh"></span>KH (Khách hàng)</span><span class="legend-item"><span class="chip chip-brse"></span>BrSE</span></div>');
     inDialog = false;
   };
 

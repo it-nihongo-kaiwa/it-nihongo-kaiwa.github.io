@@ -1,8 +1,9 @@
-﻿import { escapeHtml, fetchText, checkFileExists, parseTitle } from './utils.js';
+import { escapeHtml, fetchText, checkFileExists, parseTitle } from './utils.js';
 import { preprocessMarkdown, enhanceLessonContent, refineVocabDisplay } from './dialogue.js';
 import { insertLessonVideo } from './media.js';
-import { groupClass, groupIconSVG, setLessonHref } from './grouping.js';
+import { groupClass, groupIconSVG } from './grouping.js';
 import { initVNToggle } from './toggles.js';
+import { buildAbsoluteUrl, buildIndexUrl, buildLessonUrl, buildProjectUrl } from './links.js';
 
 export function createRenderers({ markdownView, outlineView, detailControls }) {
   let controlsRef = detailControls || null;
@@ -11,7 +12,7 @@ export function createRenderers({ markdownView, outlineView, detailControls }) {
     if (!outlineView) return;
     if (!projects || projects.length === 0) {
       const hint = location.protocol === 'file:'
-        ? 'Đang mở trực tiếp file (file://). Chạy server tĩnh hoặc GitHub Pages để fetch dữ liệu.'
+        ? 'Đang mở trực tiếp file (file://). Chạy server tĩnh hoặc GitHub Pages để tải dữ liệu.'
         : 'Không tìm thấy dự án. Hãy thêm projects trong data/outline.json.';
       outlineView.innerHTML = `<p class="loading">${hint}</p>`;
       return;
@@ -29,7 +30,7 @@ export function createRenderers({ markdownView, outlineView, detailControls }) {
 
       if (hasLessons) {
         card.innerHTML = `
-          <a class="project-link" href="#project/${project.id}" aria-label="Mở dự án ${escapeHtml(project.title)}">
+          <a class="project-link" href="${buildProjectUrl(project.id)}" aria-label="Mở dự án ${escapeHtml(project.title)}">
             <div class="project-header">
               <div class="project-icon ${iconClass}">${groupIconSVG(iconClass)}</div>
               <div class="project-info-compact">
@@ -41,7 +42,7 @@ export function createRenderers({ markdownView, outlineView, detailControls }) {
               </div>
             </div>
             ${summaryHtml}
-            <span class="cta">Xem bài học →</span>
+            <span class="cta">Xem bài học</span>
           </a>
         `;
       } else {
@@ -82,7 +83,7 @@ export function createRenderers({ markdownView, outlineView, detailControls }) {
     const backButton = document.createElement('div');
     backButton.className = 'back-button';
     backButton.innerHTML = `
-      <a href="#list" class="back-link">
+      <a href="${buildIndexUrl()}" class="back-link">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
@@ -123,18 +124,15 @@ export function createRenderers({ markdownView, outlineView, detailControls }) {
         const card = document.createElement('article');
         card.className = 'outline-card' + (item.isAvailable ? ' available' : '');
         if (item.isAvailable) {
+          const id = item.id ? String(item.id) : deriveIdFromPath(item.path);
+          const lessonHref = buildLessonUrl({ path: item.path, projectId, lessonId: id });
           card.innerHTML = `
-            <a class="card-link" href="#lesson:${item.path}" aria-label="Mở ${escapeHtml(item.title || item.topic)}">
+            <a class="card-link" href="${lessonHref}" aria-label="Mở ${escapeHtml(item.title || item.topic)}">
               <h4 class="outline-title">${escapeHtml(item.title || item.topic)}</h4>
               ${item.content ? `<p class="outline-desc">${escapeHtml(item.content)}</p>` : ''}
-              <span class="cta">Mở bài →</span>
+              <span class="cta">Mở bài học</span>
             </a>
           `;
-          const link = card.querySelector('.card-link');
-          if (link && projectId === '1') {
-            const id = item.id ? String(item.id) : deriveIdFromPath(item.path);
-            setLessonHref(link, id);
-          }
         } else {
           card.innerHTML = `
             <h4 class="outline-title">${escapeHtml(item.title || item.topic)}</h4>
@@ -157,7 +155,7 @@ export function createRenderers({ markdownView, outlineView, detailControls }) {
     if (!markdownView || !outlineView) return;
     outlineView.hidden = true;
     markdownView.hidden = false;
-    markdownView.innerHTML = '<p class="loading">Loading lesson…</p>';
+    markdownView.innerHTML = '<p class="loading">Đang tải bài học…</p>';
 
     markdownView.querySelectorAll('.back-button').forEach((btn) => btn.remove());
     outlineView.querySelectorAll('.back-button').forEach((btn) => btn.remove());
@@ -198,7 +196,7 @@ export function createRenderers({ markdownView, outlineView, detailControls }) {
     const fallback = document.createElement('section');
     fallback.className = 'detail-controls';
     fallback.innerHTML = `
-      <button id="btn-vn" class="icon-btn active" aria-pressed="true" title="Hiển/ẩn tiếng Việt (VN)">
+      <button id="btn-vn" class="icon-btn active" aria-pressed="true" title="Hiện/ẩn tiếng Việt (VN)">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
@@ -213,7 +211,7 @@ export function createRenderers({ markdownView, outlineView, detailControls }) {
     const wrapper = document.createElement('div');
     wrapper.className = 'back-button';
     wrapper.innerHTML = `
-      <a href="#project/${projectId}" class="back-link">
+      <a href="${buildProjectUrl(projectId)}" class="back-link">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
@@ -227,19 +225,21 @@ export function createRenderers({ markdownView, outlineView, detailControls }) {
     const baseName = path.split('/').pop() || 'lesson';
     const lessonId = baseName.replace(/\.md$/i, '');
     const titleFromMd = parseTitle(markdownText, lessonId);
+    const lessonUrl = buildLessonUrl({ path });
+    const absoluteUrl = buildAbsoluteUrl(lessonUrl);
 
     if (typeof setDynamicSEO === 'function' && typeof summarizeText === 'function') {
       try {
         setDynamicSEO({
-          title: `IT Nihongo Kaiwa · ${titleFromMd}`,
+          title: `IT Nihongo Kaiwa ・ ${titleFromMd}`,
           description: summarizeText(markdownText, 160),
-          url: location.origin + location.pathname + `#lesson/${lessonId}`
+          url: absoluteUrl
         });
       } catch {
-        document.title = `IT Nihongo Kaiwa · ${titleFromMd}`;
+        document.title = `IT Nihongo Kaiwa ・ ${titleFromMd}`;
       }
     } else {
-      document.title = `IT Nihongo Kaiwa · ${titleFromMd}`;
+      document.title = `IT Nihongo Kaiwa ・ ${titleFromMd}`;
     }
   }
 

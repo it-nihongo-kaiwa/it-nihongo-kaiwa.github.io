@@ -1,7 +1,9 @@
-﻿export function setLessonHref(link, lessonId) {
+import { buildLessonUrl } from './links.js';
+
+export function setLessonHref(link, lessonId, projectId) {
   if (!link || !lessonId) return;
   try {
-    link.setAttribute('href', `#lesson/${lessonId}`);
+    link.setAttribute('href', buildLessonUrl({ projectId, lessonId }));
   } catch {
     // ignore
   }
