@@ -84,6 +84,8 @@ function buildPrintArea() {
   }
 
   sheet.append(title, meta, content);
+  const extra = buildPrintExtras(markdownView);
+  if (extra) sheet.append(extra);
   printArea.innerHTML = '';
   printArea.append(sheet);
 }
@@ -104,6 +106,42 @@ function formatDate(date) {
 
 function stripVietnamese(root) {
   root.querySelectorAll('.vn').forEach((node) => node.remove());
+}
+
+function buildPrintExtras(markdownView) {
+  if (!markdownView) return null;
+  const vocabList = markdownView.querySelector('.vocab-list');
+  const phraseList = markdownView.querySelector('.phrase-list');
+  if (!vocabList && !phraseList) return null;
+
+  const wrapper = document.createElement('section');
+  wrapper.className = 'print-extra';
+
+  if (vocabList) {
+    const block = document.createElement('div');
+    block.className = 'print-extra-block';
+    const title = document.createElement('div');
+    title.className = 'print-extra-title';
+    title.textContent = 'Từ vựng';
+    const list = vocabList.cloneNode(true);
+    stripVietnamese(list);
+    block.append(title, list);
+    wrapper.append(block);
+  }
+
+  if (phraseList) {
+    const block = document.createElement('div');
+    block.className = 'print-extra-block';
+    const title = document.createElement('div');
+    title.className = 'print-extra-title';
+    title.textContent = 'Mẫu câu';
+    const list = phraseList.cloneNode(true);
+    stripVietnamese(list);
+    block.append(title, list);
+    wrapper.append(block);
+  }
+
+  return wrapper;
 }
 
 function setupLessonNav(currentPath, projects) {

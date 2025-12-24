@@ -1512,14 +1512,48 @@ a:hover { color: var(--gold-2); }
 }
 
 .print-title {
-  font-size: 1.6rem;
-  margin: 0 0 6px;
+  font-size: 1.35rem;
+  margin: 0 0 4px;
 }
 
 .print-meta {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: #555;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
+}
+
+.print-extra {
+  margin-top: 10px;
+  font-size: 0.7rem;
+  color: #333;
+}
+
+.print-extra-block {
+  margin-top: 6px;
+  break-inside: avoid;
+}
+
+.print-extra-title {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 2px;
+}
+
+.print-extra .vocab-list,
+.print-extra .phrase-list {
+  margin: 0;
+  padding-left: 1rem;
+  line-height: 1.2;
+  columns: 2;
+  column-gap: 16px;
+}
+
+.print-extra .vocab-list li,
+.print-extra .phrase-list li {
+  padding: 2px 0;
+  border: 0;
+  break-inside: avoid;
 }
 
 @media print {
@@ -1544,17 +1578,53 @@ a:hover { color: var(--gold-2); }
   }
 
   .print-sheet {
-    font-size: 12.5px;
-    line-height: 1.55;
+    position: static;
+    font-size: 11px;
+    line-height: 1.35;
   }
 
   .print-content {
-    max-height: 270mm;
-    overflow: hidden;
+    max-height: none;
+    overflow: visible;
   }
 
   .print-content .vn {
     display: none !important;
+  }
+
+  .print-extra {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    margin-top: 12px;
+  }
+
+  .print-area .lesson-transcript,
+  .print-area .bubble {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .print-area .lesson-transcript {
+    padding: 0;
+  }
+
+  .print-area .dialog-row {
+    margin: 0 0 4px;
+  }
+
+  .print-area .dialog-row .bubble {
+    padding: 0;
+  }
+
+  .print-area .dialog-legend,
+  .print-area .label {
+    display: none !important;
+  }
+
+  .print-area .jp {
+    font-weight: 600;
   }
 }
 
