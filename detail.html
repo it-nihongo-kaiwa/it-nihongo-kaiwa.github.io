@@ -84,16 +84,29 @@
                 <div id="selected-line" class="selected-line">Toàn bài</div>
                 <button id="clear-selection" class="btn btn-secondary" type="button">Bỏ chọn</button>
               </div>
+              <div class="pronunciation-key">
+                <label for="openai-key">OpenAI API Key</label>
+                <div class="key-row">
+                  <input id="openai-key" type="password" placeholder="[REDACTED]..." autocomplete="off" />
+                  <button id="save-key" class="btn btn-secondary" type="button">Lưu</button>
+                </div>
+                <p class="key-hint">Key chỉ lưu trong trình duyệt của bạn.</p>
+              </div>
               <div class="pronunciation-controls">
-                <button id="record-btn" class="btn">Bắt đầu ghi</button>
-                <button id="stop-btn" class="btn btn-secondary" disabled>Dừng</button>
+                <button id="record-toggle" class="btn" disabled>Bắt đầu ghi</button>
+                <button id="play-recording" class="btn btn-secondary" disabled>Nghe lại</button>
                 <span id="record-timer" class="record-timer">00:00</span>
               </div>
+              <audio id="recording-audio" class="recording-audio" controls hidden></audio>
               <div id="pronunciation-status" class="pronunciation-status"></div>
               <div id="pronunciation-result" class="pronunciation-result" hidden>
                 <div class="score-row">
                   <div class="score-label">Điểm tổng</div>
                   <div id="score-overall" class="score-value">--</div>
+                </div>
+                <div class="score-summary">
+                  <div class="score-label">Kết luận</div>
+                  <p id="score-summary-text"></p>
                 </div>
                 <div class="score-grid">
                   <div>

@@ -2,7 +2,7 @@ import { loadProjectsData } from './data.js';
 import { createRenderers } from './renderers.js';
 import { buildLessonUrl, getQueryParam, normalizeLessonPath } from './links.js';
 
-const OPENAI_API_KEY = '[REDACTED]proj-JnyTbEoqWslCarAwgBz4m1w06J5XEIbWd7D9apQEOCk7C10NoTcYLjl7uXASatnFx5dXOdll5RT3BlbkFJvBZX9D-gb1GEa8lAQ2KsxCSxKLSIQGgSWYlE4drvlNFlVa1xy6mqBKzqEnPpXEM2VCUhR8JO4A';
+const OPENAI_API_KEY = '';
 
 let selectedPronunciationText = '';
 let selectedPronunciationRow = null;
@@ -116,16 +116,30 @@ function stripVietnamese(root) {
 }
 
 function initPronunciationCheck() {
-  const recordBtn = document.getElementById('record-btn');
-  const stopBtn = document.getElementById('stop-btn');
+  const recordToggle = document.getElementById('record-toggle');
+  const playBtn = document.getElementById('play-recording');
+  const audioPlayer = document.getElementById('recording-audio');
   const timer = document.getElementById('record-timer');
   const status = document.getElementById('pronunciation-status');
   const result = document.getElementById('pronunciation-result');
   const toggleBtn = document.getElementById('toggle-pronunciation');
   const panel = document.getElementById('pronunciation-panel');
   const clearBtn = document.getElementById('clear-selection');
+  const keyInput = document.getElementById('openai-key');
+  const saveKeyBtn = document.getElementById('save-key');
 
-  if (!recordBtn || !stopBtn || !timer || !status || !result) return;
+  if (!recordToggle || !playBtn || !audioPlayer || !timer || !status || !result || !keyInput || !saveKeyBtn) return;
+
+  const savedKey = localStorage.getItem('openai_api_key');
+  if (savedKey) keyInput.value = savedKey;
+
+  saveKeyBtn.addEventListener('click', () => {
+    const key = keyInput.value.trim();
+    if (key) {
+      localStorage.setItem('openai_api_key', key);
+      status.textContent = 'Đã lưu API key trong trình duyệt.';
+    }
+  });
 
   if (toggleBtn && panel) {
     toggleBtn.addEventListener('click', () => {
@@ -134,15 +148,15 @@ function initPronunciationCheck() {
   }
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
-    if (selectedPronunciationRow) {
-      selectedPronunciationRow.classList.remove('pronunciation-selected');
-      selectedPronunciationRow = null;
-    }
-    selectedPronunciationText = '';
-    updateSelectedLine('');
-    recordBtn.disabled = true;
-    stopBtn.disabled = true;
-    status.textContent = 'Hãy chọn 1 câu hội thoại trước khi ghi âm.';
+      if (selectedPronunciationRow) {
+        selectedPronunciationRow.classList.remove('pronunciation-selected');
+        selectedPronunciationRow = null;
+      }
+      selectedPronunciationText = '';
+      updateSelectedLine('');
+      recordToggle.disabled = true;
+      playBtn.disabled = true;
+      status.textContent = 'Hãy chọn 1 câu hội thoại trước khi ghi âm.';
     });
   }
 
@@ -151,7 +165,14 @@ function initPronunciationCheck() {
   let startTime = null;
   let timerId = null;
 
-  recordBtn.addEventListener('click', async () => {
+  recordToggle.addEventListener('click', async () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+      recordToggle.textContent = 'Bắt đầu ghi';
+      recordToggle.disabled = false;
+      status.textContent = 'Đang xử lý...';
+      return;
+    }
     if (!selectedPronunciationText) {
       status.textContent = 'Hãy chọn 1 câu hội thoại trước khi ghi âm.';
       return;
@@ -169,13 +190,18 @@ function initPronunciationCheck() {
         stream.getTracks().forEach((track) => track.stop());
         stopTimer(timer, timerId);
         timerId = null;
-        await analyzePronunciation(new Blob(chunks, { type: 'audio/webm' }), status, result);
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        if (audioPlayer.src) URL.revokeObjectURL(audioPlayer.src);
+        audioPlayer.src = URL.createObjectURL(blob);
+        audioPlayer.hidden = false;
+        playBtn.disabled = false;
+        recordToggle.textContent = 'Bắt đầu ghi';
+        await analyzePronunciation(blob, status, result);
       };
       mediaRecorder.start();
       startTime = Date.now();
       timerId = startTimer(timer, startTime);
-      recordBtn.disabled = true;
-      stopBtn.disabled = false;
+      recordToggle.textContent = 'Dừng';
       status.textContent = 'Đang ghi âm...';
     } catch (error) {
       status.textContent = 'Không thể truy cập micro. Hãy kiểm tra quyền.';
@@ -183,16 +209,13 @@ function initPronunciationCheck() {
     }
   });
 
-  stopBtn.addEventListener('click', () => {
-    if (!mediaRecorder) return;
-    mediaRecorder.stop();
-    recordBtn.disabled = false;
-    stopBtn.disabled = true;
-    status.textContent = 'Đang xử lý...';
+  playBtn.addEventListener('click', () => {
+    if (!audioPlayer.src) return;
+    audioPlayer.play().catch(() => {});
   });
 
-  recordBtn.disabled = true;
-  stopBtn.disabled = true;
+  recordToggle.disabled = true;
+  playBtn.disabled = true;
   status.textContent = 'Hãy chọn 1 câu hội thoại trước khi ghi âm.';
 }
 
@@ -213,7 +236,7 @@ function stopTimer(el, id) {
 }
 
 async function analyzePronunciation(audioBlob, statusEl, resultEl) {
-  const apiKey = OPENAI_API_KEY;
+  const apiKey = OPENAI_API_KEY || localStorage.getItem('openai_api_key') || '';
   if (!apiKey) {
     statusEl.textContent = 'Thiếu OpenAI API Key trong cấu hình.';
     return;
@@ -276,7 +299,7 @@ async function evaluatePronunciation(apiKey, expectedText, transcript) {
   const user = {
     expected: expectedText,
     transcript,
-    request: 'Score pronunciation accuracy for Japanese. Provide scores from 0-100 for pronunciation, intonation, speed, clarity and overall_score. Add short notes and tips in Vietnamese.'
+    request: 'Return JSON with keys: overall_score, pronunciation, intonation, speed, clarity (0-100). Provide short Vietnamese notes and tips as strings.'
   };
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -319,14 +342,25 @@ function parseScoreJson(text) {
 }
 
 function fillPronunciationResult(scores, transcript) {
-  setText('score-overall', scores.overall_score);
-  setText('score-pronunciation', scores.pronunciation);
-  setText('score-intonation', scores.intonation);
-  setText('score-speed', scores.speed);
-  setText('score-clarity', scores.clarity);
-  setText('score-notes-text', scores.notes || '');
-  setText('score-tips-text', scores.tips || '');
+  const overall = readScore(scores, ['overall_score', 'overall', 'total']);
+  const pronunciation = readScore(scores, ['pronunciation', 'accuracy']);
+  const intonation = readScore(scores, ['intonation']);
+  const speed = readScore(scores, ['speed', 'pace']);
+  const clarity = readScore(scores, ['clarity']);
+  const notes = readText(scores, ['notes', 'comment', 'remarks']);
+  const tips = readText(scores, ['tips', 'suggestions', 'improvement']);
+
+  setText('score-overall', overall);
+  setText('score-pronunciation', pronunciation);
+  setText('score-intonation', intonation);
+  setText('score-speed', speed);
+  setText('score-clarity', clarity);
+  setText('score-notes-text', notes || 'Chưa có nhận xét.');
+  setText('score-tips-text', tips || 'Chưa có gợi ý.');
   setText('transcript-text', transcript || '');
+  const summary = buildSummaryText(overall);
+  setText('score-summary-text', summary.text);
+  setSummaryTone(summary.tone);
 }
 
 function setText(id, value) {
@@ -335,13 +369,56 @@ function setText(id, value) {
   el.textContent = value !== undefined && value !== null ? String(value) : '--';
 }
 
+function buildSummaryText(overallScore) {
+  const score = Number(overallScore);
+  if (!Number.isFinite(score)) {
+    return { text: 'Chưa đủ dữ liệu để kết luận.', tone: 'neutral' };
+  }
+  if (score >= 90) {
+    return { text: 'Trên 90 điểm — Rất tốt, phát âm gần như người bản xứ. Có thể chuyển câu tiếp theo.', tone: 'good' };
+  }
+  if (score >= 70) {
+    return { text: '70–89 điểm — Khá tốt, chỉ cần chỉnh lại một số âm nhỏ. Có thể chuyển câu tiếp theo.', tone: 'ok' };
+  }
+  return { text: 'Dưới 70 điểm — Nên luyện lại phần phát âm hoặc ngữ điệu trước khi chuyển câu tiếp theo.', tone: 'warn' };
+}
+
+function setSummaryTone(tone) {
+  const summary = document.querySelector('.score-summary');
+  if (!summary) return;
+  summary.classList.remove('summary-good', 'summary-ok', 'summary-warn');
+  if (tone === 'good') summary.classList.add('summary-good');
+  if (tone === 'ok') summary.classList.add('summary-ok');
+  if (tone === 'warn') summary.classList.add('summary-warn');
+}
+
+function readScore(obj, keys) {
+  if (!obj || typeof obj !== 'object') return '--';
+  for (const key of keys) {
+    if (obj[key] !== undefined && obj[key] !== null) return obj[key];
+  }
+  return '--';
+}
+
+function readText(obj, keys) {
+  if (!obj || typeof obj !== 'object') return '';
+  for (const key of keys) {
+    const value = obj[key];
+    if (!value) continue;
+    if (typeof value === 'string') return value;
+    if (Array.isArray(value)) return value.join(' ');
+    if (typeof value === 'object') return JSON.stringify(value);
+  }
+  return '';
+}
+
 function attachPronunciationToLesson(markdownView) {
   const panel = document.getElementById('pronunciation-panel');
   if (!markdownView || !panel) return;
   if (!markdownView.contains(panel)) {
-    const vocabHeading = markdownView.querySelector('.vocab-head, .phrase-head');
-    if (vocabHeading && vocabHeading.parentNode) {
-      vocabHeading.parentNode.insertBefore(panel, vocabHeading);
+    const layout = markdownView.querySelector('.lesson-media-layout');
+    if (layout && layout.parentNode) {
+      layout.parentNode.insertBefore(panel, layout.nextSibling);
     } else {
       markdownView.append(panel);
     }
@@ -364,11 +441,11 @@ function attachPronunciationToLesson(markdownView) {
     row.classList.add('pronunciation-selected');
     selectedPronunciationText = text;
     updateSelectedLine(text);
-    const recordBtn = document.getElementById('record-btn');
-    const stopBtn = document.getElementById('stop-btn');
+    const recordToggle = document.getElementById('record-toggle');
+    const playBtn = document.getElementById('play-recording');
     const status = document.getElementById('pronunciation-status');
-    if (recordBtn) recordBtn.disabled = false;
-    if (stopBtn) stopBtn.disabled = true;
+    if (recordToggle) recordToggle.disabled = false;
+    if (playBtn) playBtn.disabled = true;
     if (status) status.textContent = '';
   });
 }
@@ -376,7 +453,7 @@ function attachPronunciationToLesson(markdownView) {
 function updateSelectedLine(text) {
   const el = document.getElementById('selected-line');
   if (!el) return;
-  el.textContent = text ? text : 'Toàn bài';
+  el.textContent = text || '';
 }
 
 function buildPrintExtras(markdownView) {
@@ -434,14 +511,14 @@ function setNavButton(button, target, titleEl) {
     button.setAttribute('aria-disabled', 'true');
     button.removeAttribute('href');
     button.tabIndex = -1;
-    if (titleEl) titleEl.textContent = '---';
+    if (titleEl) titleEl.textContent = '';
     return;
   }
   button.classList.remove('disabled');
   button.removeAttribute('aria-disabled');
   button.setAttribute('href', buildLessonUrl({ path: target.path }));
   button.tabIndex = 0;
-  if (titleEl) titleEl.textContent = target.title || '---';
+  if (titleEl) titleEl.textContent = target.title || '';
 }
 
 function findLessonNeighbors(currentPath, projects) {
