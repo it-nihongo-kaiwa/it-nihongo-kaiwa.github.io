@@ -394,6 +394,14 @@ a:hover { color: var(--gold-2); }
 .icon-btn { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.07); color: var(--muted); cursor: pointer; }
 .icon-btn:hover { border-color: rgba(255,255,255,0.28); color: var(--ink); }
 .icon-btn.active { color: #04131f; background: linear-gradient(180deg, var(--cyan-2), var(--cyan)); border-color: transparent; }
+.icon-btn.disabled,
+.icon-btn[aria-disabled="true"],
+.lesson-nav-link.disabled,
+.lesson-nav-link[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 
 .layout { padding: 18px 0 28px; }
 
@@ -417,6 +425,77 @@ a:hover { color: var(--gold-2); }
 .content { padding: 0; overflow: hidden; }
 .content.full { width: 100%; }
 .content-inner { padding: 20px clamp(16px, 3vw, 32px); background: rgba(255,255,255,0.05); border-radius: 16px; }
+
+.lesson-nav {
+  display: flex;
+  gap: 16px;
+  margin: 20px 0 8px;
+}
+
+.lesson-nav-link {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.06);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.lesson-nav-link:hover {
+  border-color: rgba(36,179,255,0.45);
+  background: rgba(36,179,255,0.1);
+  transform: translateY(-2px);
+}
+
+.lesson-nav-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+}
+
+.lesson-nav-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lesson-nav-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.lesson-nav-arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--cyan-2);
+  background: rgba(255,255,255,0.05);
+  flex: 0 0 auto;
+}
+
+.lesson-nav-link.next {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.lesson-nav-link.next .lesson-nav-body {
+  align-items: flex-end;
+}
 
 #markdown-view h1, #markdown-view h2, #markdown-view h3 {
   line-height: 1.25;
@@ -1412,6 +1491,12 @@ a:hover { color: var(--gold-2); }
   background: rgba(255,255,255,0.1);
   color: var(--ink);
   border-color: rgba(255,255,255,0.2);
+}
+
+@media (max-width: 640px) {
+  .lesson-nav {
+    flex-direction: column;
+  }
 }
 
 .print-area {

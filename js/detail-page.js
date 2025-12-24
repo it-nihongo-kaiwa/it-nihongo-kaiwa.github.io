@@ -1,5 +1,6 @@
+import { loadProjectsData } from './data.js';
 import { createRenderers } from './renderers.js';
-import { getQueryParam, normalizeLessonPath } from './links.js';
+import { buildLessonUrl, getQueryParam, normalizeLessonPath } from './links.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const markdownView = document.getElementById('markdown-view');
@@ -23,7 +24,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  const dataPromise = loadProjectsData();
   await renderer.renderLesson(path);
+  const data = await dataPromise;
+  const projects = Array.isArray(data?.projects) ? data.projects : [];
+  setupLessonNav(path, projects);
 });
 
 function initPrintButton() {
@@ -99,4 +104,64 @@ function formatDate(date) {
 
 function stripVietnamese(root) {
   root.querySelectorAll('.vn').forEach((node) => node.remove());
+}
+
+function setupLessonNav(currentPath, projects) {
+  const prevButton = document.getElementById('btn-prev');
+  const nextButton = document.getElementById('btn-next');
+  const prevTitle = document.getElementById('prev-title');
+  const nextTitle = document.getElementById('next-title');
+  if (!prevButton || !nextButton || !currentPath) return;
+
+  const { prev, next } = findLessonNeighbors(currentPath, projects);
+  setNavButton(prevButton, prev, prevTitle);
+  setNavButton(nextButton, next, nextTitle);
+}
+
+function setNavButton(button, target, titleEl) {
+  if (!button) return;
+  if (!target) {
+    button.classList.add('disabled');
+    button.setAttribute('aria-disabled', 'true');
+    button.removeAttribute('href');
+    button.tabIndex = -1;
+    if (titleEl) titleEl.textContent = '---';
+    return;
+  }
+  button.classList.remove('disabled');
+  button.removeAttribute('aria-disabled');
+  button.setAttribute('href', buildLessonUrl({ path: target.path }));
+  button.tabIndex = 0;
+  if (titleEl) titleEl.textContent = target.title || '---';
+}
+
+function findLessonNeighbors(currentPath, projects) {
+  const normalized = normalizePath(currentPath);
+  for (const project of projects || []) {
+    const lessons = flattenLessons(project);
+    const index = lessons.findIndex((lesson) => normalizePath(lesson.path) === normalized);
+    if (index !== -1) {
+      return {
+        prev: index > 0 ? lessons[index - 1] : null,
+        next: index < lessons.length - 1 ? lessons[index + 1] : null
+      };
+    }
+  }
+  return { prev: null, next: null };
+}
+
+function flattenLessons(project) {
+  const items = [];
+  if (!project || !Array.isArray(project.groups)) return items;
+  for (const group of project.groups) {
+    for (const item of group.items || []) {
+      const path = item.path || `data/project${project.id || 1}/${item.id}.md`;
+      items.push({ path, title: item.title || item.topic || item.id || path });
+    }
+  }
+  return items;
+}
+
+function normalizePath(path) {
+  return String(path || '').replace(/^[./]+/, '');
 }
