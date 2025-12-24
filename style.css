@@ -469,6 +469,176 @@ a:hover { color: var(--gold-2); }
   text-overflow: ellipsis;
 }
 
+.pronunciation-panel {
+  margin: 22px 0 18px;
+  padding: 18px 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+}
+
+.pronunciation-title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.pronunciation-subtitle {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.pronunciation-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.pronunciation-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pronunciation-body {
+  margin-top: 12px;
+}
+
+.pronunciation-toggle {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+}
+
+.pronunciation-panel.collapsed .pronunciation-body {
+  display: none;
+}
+
+.pronunciation-panel.collapsed .pronunciation-toggle svg {
+  transform: rotate(-90deg);
+}
+
+.pronunciation-panel.pronunciation-inline {
+  position: static;
+}
+
+.pronunciation-target {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.selected-line {
+  font-size: 0.9rem;
+  color: var(--ink);
+  line-height: 1.4;
+  max-height: 4.2em;
+  overflow: hidden;
+}
+
+.pronunciation-selected .bubble {
+  box-shadow: 0 0 0 2px rgba(79,208,255,0.7);
+  border-color: rgba(79,208,255,0.8);
+}
+
+.record-timer {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.pronunciation-key {
+  margin-top: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.pronunciation-key label {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.key-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.key-row input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(0,0,0,0.25);
+  color: var(--ink);
+}
+
+.key-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.pronunciation-status {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.pronunciation-result {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  display: grid;
+  gap: 12px;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.score-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.score-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.score-notes p,
+.transcript-block p {
+  margin: 6px 0 0;
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .pronunciation-panel.pronunciation-inline {
+    position: static;
+  }
+}
+
+@media print {
+  .pronunciation-panel {
+    display: none !important;
+  }
+}
+
 .lesson-nav-body {
   display: flex;
   flex-direction: column;

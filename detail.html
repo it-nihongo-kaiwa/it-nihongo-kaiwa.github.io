@@ -66,6 +66,68 @@
           <article id="markdown-view" hidden>
             <p class="loading">Loading lesson…</p>
           </article>
+          <section id="pronunciation-panel" class="pronunciation-panel">
+            <div class="pronunciation-header">
+              <div>
+                <h2 class="pronunciation-title">Kiểm tra phát âm</h2>
+                <p class="pronunciation-subtitle">Ghi âm bài đọc và nhận đánh giá theo tiêu chí.</p>
+              </div>
+              <button id="toggle-pronunciation" class="icon-btn pronunciation-toggle" type="button" aria-label="Thu gọn/ mở rộng">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+            <div class="pronunciation-body">
+              <div class="pronunciation-target">
+                <div class="score-label">Câu đang chọn</div>
+                <div id="selected-line" class="selected-line">Toàn bài</div>
+                <button id="clear-selection" class="btn btn-secondary" type="button">Bỏ chọn</button>
+              </div>
+              <div class="pronunciation-controls">
+                <button id="record-btn" class="btn">Bắt đầu ghi</button>
+                <button id="stop-btn" class="btn btn-secondary" disabled>Dừng</button>
+                <span id="record-timer" class="record-timer">00:00</span>
+              </div>
+              <div id="pronunciation-status" class="pronunciation-status"></div>
+              <div id="pronunciation-result" class="pronunciation-result" hidden>
+                <div class="score-row">
+                  <div class="score-label">Điểm tổng</div>
+                  <div id="score-overall" class="score-value">--</div>
+                </div>
+                <div class="score-grid">
+                  <div>
+                    <div class="score-label">Phát âm</div>
+                    <div id="score-pronunciation" class="score-value">--</div>
+                  </div>
+                  <div>
+                    <div class="score-label">Ngữ điệu</div>
+                    <div id="score-intonation" class="score-value">--</div>
+                  </div>
+                  <div>
+                    <div class="score-label">Tốc độ</div>
+                    <div id="score-speed" class="score-value">--</div>
+                  </div>
+                  <div>
+                    <div class="score-label">Độ rõ</div>
+                    <div id="score-clarity" class="score-value">--</div>
+                  </div>
+                </div>
+                <div class="score-notes">
+                  <div class="score-label">Nhận xét</div>
+                  <p id="score-notes-text"></p>
+                </div>
+                <div class="score-notes">
+                  <div class="score-label">Gợi ý cải thiện</div>
+                  <p id="score-tips-text"></p>
+                </div>
+                <div class="transcript-block">
+                  <div class="score-label">Transcription</div>
+                  <p id="transcript-text"></p>
+                </div>
+              </div>
+            </div>
+          </section>
           <nav class="lesson-nav" aria-label="Điều hướng bài học">
             <a id="btn-prev" class="lesson-nav-link prev" aria-label="Bài trước">
               <span class="lesson-nav-arrow" aria-hidden="true">
