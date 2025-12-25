@@ -530,16 +530,21 @@ a:hover { color: var(--gold-2); }
   display: grid;
   gap: 6px;
   margin-bottom: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.12);
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
 }
 
 .selected-line {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: var(--ink);
-  line-height: 1.4;
-  max-height: 4.2em;
-  overflow: hidden;
+  line-height: 1.55;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(36,179,255,0.18), rgba(255,191,42,0.12));
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: inset 0 0 0 1px rgba(36,179,255,0.15);
 }
 
 .pronunciation-selected .bubble {
@@ -636,11 +641,29 @@ a:hover { color: var(--gold-2); }
   color: rgba(255,255,255,0.8);
 }
 
-.pronunciation-panel .score-grid > div {
-  padding: 10px 12px;
+.score-item {
+  padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.04);
+  display: grid;
+  gap: 6px;
+}
+
+.score-bar {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  overflow: hidden;
+}
+
+.score-bar-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--cyan-2), var(--gold));
 }
 
 .score-notes p,
@@ -677,13 +700,27 @@ a:hover { color: var(--gold-2); }
 }
 
 .pronunciation-target {
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  padding: 10px 12px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
 .pronunciation-controls .btn {
   border-radius: 999px;
+}
+
+#clear-selection {
+  align-self: start;
+  justify-self: start;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  border-radius: 999px;
+  min-width: auto;
+  height: auto;
+  background: linear-gradient(135deg, var(--gold), var(--gold-2));
+  border: 0;
+  color: #04131f;
 }
 
 .record-timer {

@@ -156,7 +156,7 @@ function initPronunciationCheck() {
       updateSelectedLine('');
       recordToggle.disabled = true;
       playBtn.disabled = true;
-      status.textContent = 'Hãy chọn 1 câu hội thoại trước khi ghi âm.';
+      status.textContent = '';
     });
   }
 
@@ -174,7 +174,7 @@ function initPronunciationCheck() {
       return;
     }
     if (!selectedPronunciationText) {
-      status.textContent = 'Hãy chọn 1 câu hội thoại trước khi ghi âm.';
+      status.textContent = '';
       return;
     }
     status.textContent = '';
@@ -216,7 +216,7 @@ function initPronunciationCheck() {
 
   recordToggle.disabled = true;
   playBtn.disabled = true;
-  status.textContent = 'Hãy chọn 1 câu hội thoại trước khi ghi âm.';
+  status.textContent = '';
 }
 
 function startTimer(el, startTime) {
@@ -249,10 +249,11 @@ async function analyzePronunciation(audioBlob, statusEl, resultEl) {
 
   try {
     statusEl.textContent = 'Đang chuyển giọng nói thành văn bản...';
-    const transcript = await transcribeAudio(apiKey, audioBlob);
+    const transcription = await transcribeAudio(apiKey, audioBlob);
+    const transcriptText = transcription.text || '';
     statusEl.textContent = 'Đang chấm điểm phát âm...';
-    const scores = await evaluatePronunciation(apiKey, expectedText, transcript);
-    fillPronunciationResult(scores, transcript);
+    const scores = await evaluatePronunciation(apiKey, expectedText, transcriptText, transcription);
+    fillPronunciationResult(scores, transcriptText);
     resultEl.hidden = false;
     statusEl.textContent = 'Hoàn tất.';
   } catch (error) {
@@ -277,8 +278,9 @@ function getPronunciationTargetText() {
 
 async function transcribeAudio(apiKey, blob) {
   const form = new FormData();
-  form.append('model', 'whisper-1');
+  form.append('model', 'gpt-4o-transcribe');
   form.append('language', 'ja');
+  form.append('response_format', 'json');
   form.append('file', blob, 'speech.webm');
   const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
     method: 'POST',
@@ -291,15 +293,17 @@ async function transcribeAudio(apiKey, blob) {
     throw new Error(`Transcription error ${response.status}`);
   }
   const data = await response.json();
-  return data.text || '';
+  return data || {};
 }
 
-async function evaluatePronunciation(apiKey, expectedText, transcript) {
-  const system = 'You are a Japanese pronunciation evaluator. Return only valid JSON.';
+async function evaluatePronunciation(apiKey, expectedText, transcript, transcription) {
+  const segmentMetrics = summarizeSegments(transcription);
+  const system = 'Bạn là giáo viên phát âm tiếng Nhật. Chấm điểm nghiêm túc theo rubric 0-10 từng mục. Dựa trên: (1) transcript người học, (2) so với câu mẫu. Nếu transcript lệch nghĩa/thiếu âm, trừ điểm accuracy & pronunciation. Tính total_score theo công thức chuẩn hóa 0-100.';
   const user = {
     expected: expectedText,
     transcript,
-    request: 'Return JSON with keys: overall_score, pronunciation, intonation, speed, clarity (0-100). Provide short Vietnamese notes and tips as strings.'
+    segments: segmentMetrics,
+    request: 'Return JSON with keys: pronunciation, intonation, pace, fluency, accuracy (0-10 each) and total_score (0-100). total_score = round((sum 5 mục) / 50 * 100). Provide short Vietnamese notes and tips as strings. Use segments to improve accuracy.'
   };
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -341,20 +345,46 @@ function parseScoreJson(text) {
   }
 }
 
+function summarizeSegments(transcription) {
+  const segments = Array.isArray(transcription?.segments) ? transcription.segments : [];
+  if (!segments.length) return null;
+  const confidences = segments
+    .map((segment) => segment.avg_logprob)
+    .filter((value) => typeof value === 'number' && Number.isFinite(value));
+  const avgLogprob = confidences.length
+    ? confidences.reduce((sum, value) => sum + value, 0) / confidences.length
+    : null;
+  const duration = Number(transcription?.duration);
+  const totalTokens = segments.reduce((sum, segment) => sum + (segment.tokens?.length || 0), 0);
+  return {
+    avg_logprob: avgLogprob,
+    duration_seconds: Number.isFinite(duration) ? duration : null,
+    segment_count: segments.length,
+    token_count: totalTokens
+  };
+}
+
 function fillPronunciationResult(scores, transcript) {
-  const overall = readScore(scores, ['overall_score', 'overall', 'total']);
-  const pronunciation = readScore(scores, ['pronunciation', 'accuracy']);
+  const overall = readScore(scores, ['total_score', 'overall_score', 'overall', 'total']);
+  const pronunciation = readScore(scores, ['pronunciation']);
   const intonation = readScore(scores, ['intonation']);
-  const speed = readScore(scores, ['speed', 'pace']);
-  const clarity = readScore(scores, ['clarity']);
+  const pace = readScore(scores, ['pace', 'speed']);
+  const fluency = readScore(scores, ['fluency']);
+  const accuracy = readScore(scores, ['accuracy']);
   const notes = readText(scores, ['notes', 'comment', 'remarks']);
   const tips = readText(scores, ['tips', 'suggestions', 'improvement']);
 
   setText('score-overall', overall);
   setText('score-pronunciation', pronunciation);
   setText('score-intonation', intonation);
-  setText('score-speed', speed);
-  setText('score-clarity', clarity);
+  setText('score-pace', pace);
+  setText('score-fluency', fluency);
+  setText('score-accuracy', accuracy);
+  setScoreBar('score-pronunciation-bar', pronunciation);
+  setScoreBar('score-intonation-bar', intonation);
+  setScoreBar('score-pace-bar', pace);
+  setScoreBar('score-fluency-bar', fluency);
+  setScoreBar('score-accuracy-bar', accuracy);
   setText('score-notes-text', notes || 'Chưa có nhận xét.');
   setText('score-tips-text', tips || 'Chưa có gợi ý.');
   setText('transcript-text', transcript || '');
@@ -367,6 +397,18 @@ function setText(id, value) {
   const el = document.getElementById(id);
   if (!el) return;
   el.textContent = value !== undefined && value !== null ? String(value) : '--';
+}
+
+function setScoreBar(id, value) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const num = Number(value);
+  if (!Number.isFinite(num)) {
+    el.style.width = '0%';
+    return;
+  }
+  const clamped = Math.max(0, Math.min(10, num));
+  el.style.width = `${(clamped / 10) * 100}%`;
 }
 
 function buildSummaryText(overallScore) {

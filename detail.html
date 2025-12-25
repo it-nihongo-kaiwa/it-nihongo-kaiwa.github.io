@@ -70,7 +70,7 @@
             <div class="pronunciation-header">
               <div>
                 <h2 class="pronunciation-title">Kiểm tra phát âm</h2>
-                <p class="pronunciation-subtitle">Ghi âm bài đọc và nhận đánh giá theo tiêu chí.</p>
+                <p class="pronunciation-subtitle"></p>
               </div>
               <button id="toggle-pronunciation" class="icon-btn pronunciation-toggle" type="button" aria-label="Thu gọn/ mở rộng">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -81,7 +81,7 @@
             <div class="pronunciation-body">
               <div class="pronunciation-target">
                 <div class="score-label">Câu đang chọn</div>
-                <div id="selected-line" class="selected-line">Toàn bài</div>
+                <div id="selected-line" class="selected-line">Hãy chọn 1 câu hội thoại.</div>
                 <button id="clear-selection" class="btn btn-secondary" type="button">Bỏ chọn</button>
               </div>
               <div class="pronunciation-key">
@@ -109,21 +109,30 @@
                   <p id="score-summary-text"></p>
                 </div>
                 <div class="score-grid">
-                  <div>
+                  <div class="score-item">
                     <div class="score-label">Phát âm</div>
                     <div id="score-pronunciation" class="score-value">--</div>
+                    <div class="score-bar"><span id="score-pronunciation-bar" class="score-bar-fill"></span></div>
                   </div>
-                  <div>
+                  <div class="score-item">
                     <div class="score-label">Ngữ điệu</div>
                     <div id="score-intonation" class="score-value">--</div>
+                    <div class="score-bar"><span id="score-intonation-bar" class="score-bar-fill"></span></div>
                   </div>
-                  <div>
+                  <div class="score-item">
                     <div class="score-label">Tốc độ</div>
-                    <div id="score-speed" class="score-value">--</div>
+                    <div id="score-pace" class="score-value">--</div>
+                    <div class="score-bar"><span id="score-pace-bar" class="score-bar-fill"></span></div>
                   </div>
-                  <div>
-                    <div class="score-label">Độ rõ</div>
-                    <div id="score-clarity" class="score-value">--</div>
+                  <div class="score-item">
+                    <div class="score-label">Trôi chảy</div>
+                    <div id="score-fluency" class="score-value">--</div>
+                    <div class="score-bar"><span id="score-fluency-bar" class="score-bar-fill"></span></div>
+                  </div>
+                  <div class="score-item">
+                    <div class="score-label">Đọc đúng</div>
+                    <div id="score-accuracy" class="score-value">--</div>
+                    <div class="score-bar"><span id="score-accuracy-bar" class="score-bar-fill"></span></div>
                   </div>
                 </div>
                 <div class="score-notes">
