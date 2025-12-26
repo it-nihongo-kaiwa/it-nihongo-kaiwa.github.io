@@ -79,11 +79,14 @@
               </button>
             </div>
             <div class="pronunciation-body">
-              <div class="pronunciation-target">
-                <div class="score-label">Câu đang chọn</div>
-                <div id="selected-line" class="selected-line">Hãy chọn 1 câu hội thoại.</div>
-                <button id="clear-selection" class="btn btn-secondary" type="button">Bỏ chọn</button>
+            <div class="pronunciation-target">
+              <div class="score-label">Câu đang chọn</div>
+              <div id="selected-line" class="selected-line">Hãy chọn 1 câu hội thoại.</div>
+              <div class="pronunciation-target-actions">
+                <button id="next-sentence" class="btn btn-secondary" disabled>Câu tiếp theo</button>
+                <button id="clear-selection" class="btn btn-secondary" type="button" disabled>Bỏ chọn</button>
               </div>
+            </div>
               <div class="pronunciation-key">
                 <label for="openai-key">OpenAI API Key</label>
                 <div class="key-row">
