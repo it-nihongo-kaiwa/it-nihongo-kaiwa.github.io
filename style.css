@@ -1974,6 +1974,28 @@ a:hover { color: var(--gold-2); }
   .print-area .dialog-row .bubble {
     padding: 0;
     max-width: 85%;
+    border-radius: 0;
+  }
+  
+  .print-area .dialog-row.left .bubble,
+  .print-area .dialog-row.right .bubble {
+    background: transparent;
+    border-left: 0;
+    border-right: 0;
+  }
+  
+  .print-area .dialog-row.active .bubble {
+    transform: none;
+    color: #111;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+  
+  .print-area .dialog-row.active .bubble .jp,
+  .print-area .dialog-row.active .bubble .vn {
+    color: inherit;
+    font-weight: 500;
   }
 
   .print-area .dialog-row.right {
