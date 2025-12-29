@@ -299,9 +299,11 @@ function getPronunciationTargetText() {
 
 async function transcribeAudio(apiKey, blob) {
   const form = new FormData();
-  form.append('model', 'gpt-4o-transcribe');
+  form.append('model', 'whisper-1');
   form.append('language', 'ja');
-  form.append('response_format', 'json');
+  form.append('response_format', 'verbose_json');
+  form.append('timestamp_granularities[]', 'segment');
+  form.append('timestamp_granularities[]', 'word');
   form.append('file', blob, 'speech.webm');
   const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
     method: 'POST',
