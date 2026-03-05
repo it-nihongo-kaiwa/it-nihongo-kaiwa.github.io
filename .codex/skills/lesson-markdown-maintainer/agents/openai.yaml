@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lesson Markdown Maintainer"
+  short_description: "Maintain lesson markdown structure and dialogue format."
+  default_prompt: "Edit or create lesson markdown files in data/project*/ while preserving parser-compatible dialogue and section structure."

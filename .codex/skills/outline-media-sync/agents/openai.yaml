@@ -1,0 +1,4 @@
+interface:
+  display_name: "Outline Media Sync"
+  short_description: "Sync outline entries with lesson files and media assets."
+  default_prompt: "Update data/outline.json and verify data/project*/ markdown paths, bg images, and video files stay consistent."

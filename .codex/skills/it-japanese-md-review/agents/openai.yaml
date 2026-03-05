@@ -1,0 +1,4 @@
+interface:
+  display_name: "IT Japanese MD Review"
+  short_description: "Review IT Japanese markdown quality with scoring."
+  default_prompt: "Review one or more lesson markdown files and score Japanese IT dialogue quality, terminology, and clarity."
