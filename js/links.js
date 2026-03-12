@@ -2,8 +2,8 @@ export function getQueryParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
-export function buildIndexUrl() {
-  return 'index.html';
+export function buildProjectListUrl() {
+  return 'list.html';
 }
 
 export function buildProjectUrl(projectId) {

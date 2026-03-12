@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (!projectId) {
     if (outlineView) outlineView.innerHTML = '<p class="loading">Không tìm thấy dự án.</p>';
-      updateMissingProjectSEO();
+    updateMissingProjectSEO();
     return;
   }
 
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function updateProjectSEO(projects, projectId) {
   const project = Array.isArray(projects) ? projects.find((item) => item.id === projectId) : null;
   const title = project ? project.title : projectId;
-  const pageTitle = `IT Nihongo Kaiwa ・ ${title}`;
+  const pageTitle = `IT 日本語会話 - ${title}`;
   document.title = pageTitle;
 
   if (typeof setDynamicSEO === 'function') {
@@ -40,6 +40,6 @@ function updateProjectSEO(projects, projectId) {
 }
 
 function updateMissingProjectSEO() {
-  const pageTitle = 'IT Nihongo Kaiwa ・ Project';
+  const pageTitle = 'IT 日本語会話 - Dự án';
   document.title = pageTitle;
 }

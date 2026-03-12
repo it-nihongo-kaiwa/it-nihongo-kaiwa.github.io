@@ -1,6 +1,6 @@
 import { loadProjectsData } from './data.js';
 import { createRenderers } from './renderers.js';
-import { buildAbsoluteUrl, buildIndexUrl } from './links.js';
+import { buildAbsoluteUrl, buildProjectListUrl } from './links.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const outlineView = document.getElementById('outline-view');
@@ -13,14 +13,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function updateListSEO() {
-  const pageTitle = 'IT Nihongo Kaiwa';
+  const pageTitle = 'IT Nihongo Kaiwa - Projects';
   document.title = pageTitle;
   if (typeof setDynamicSEO === 'function') {
     try {
       setDynamicSEO({
         title: pageTitle,
-        description: 'Danh sách các dự án luyện IT tiếng Nhật. Mẫu câu, từ vựng và tình huống thực tế.',
-        url: buildAbsoluteUrl(buildIndexUrl())
+        description: 'Danh sach cac project luyen IT tieng Nhat theo tinh huong thuc te.',
+        url: buildAbsoluteUrl(buildProjectListUrl())
       });
     } catch {
       // ignore SEO errors

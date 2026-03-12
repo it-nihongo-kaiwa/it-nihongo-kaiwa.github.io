@@ -1,4 +1,4 @@
-﻿async function resourceExists(url) {
+async function resourceExists(url) {
   try {
     const head = await fetch(url, { method: 'HEAD', cache: 'no-cache' });
     if (head.ok) return true;
@@ -19,9 +19,7 @@ export async function insertLessonVideo(root, mdPath) {
     const base = (mdPath.split('/').pop() || '').replace(/\.md$/i, '');
     let projectPath = 'video/';
     const projectMatch = mdPath.match(/\/project(\d+)\//);
-    if (projectMatch) {
-      projectPath = `video/project${projectMatch[1]}/`;
-    }
+    if (projectMatch) projectPath = `video/project${projectMatch[1]}/`;
 
     const candidates = [
       `${projectPath}${base}.mp4`,
@@ -56,11 +54,8 @@ export async function insertLessonVideo(root, mdPath) {
     const { wrapper, mediaColumn, transcriptColumn } = layout;
     mediaColumn.innerHTML = '';
     mediaColumn.appendChild(fig);
-    transcriptNodes.forEach((node) => {
-      transcriptColumn.appendChild(node);
-    });
-    const controls = attachTranscriptSync(transcriptColumn, video);
-    insertTranscriptToolbar(transcriptColumn, controls);
+    transcriptNodes.forEach((node) => transcriptColumn.appendChild(node));
+    attachTranscriptSync(transcriptColumn, video);
     moveLegendOutside(wrapper, transcriptColumn);
   } catch (error) {
     console.error('Lesson video error', error);
@@ -114,7 +109,6 @@ function attachTranscriptSync(transcript, video) {
   const timedRows = Array.from(transcript.querySelectorAll('.dialog-row[data-time]'));
   let segmentEndTime = null;
   let segmentActive = false;
-  let playMode = 'single';
 
   const setActiveRow = (row) => {
     if (activeRow === row) return;
@@ -132,20 +126,18 @@ function attachTranscriptSync(transcript, video) {
   };
 
   transcript.addEventListener('click', (event) => {
+    if (event.target.closest('.dialog-pron-btn, .dialog-row-controls')) return;
+
     const row = event.target.closest('.dialog-row[data-time]');
     if (!row) return;
     const seconds = Number(row.dataset.time);
     if (!Number.isFinite(seconds)) return;
+
     video.currentTime = seconds;
-    if (playMode === 'single') {
-      const nextTime = getNextRowTime(row, timedRows, video.duration);
-      if (Number.isFinite(nextTime)) {
-        segmentEndTime = Math.max(nextTime - 0.35, seconds + 0.1);
-        segmentActive = true;
-      } else {
-        segmentEndTime = null;
-        segmentActive = false;
-      }
+    const nextTime = getNextRowTime(row, timedRows, video.duration);
+    if (Number.isFinite(nextTime)) {
+      segmentEndTime = Math.max(nextTime - 0.35, seconds + 0.1);
+      segmentActive = true;
     } else {
       clearSegment();
     }
@@ -176,13 +168,6 @@ function attachTranscriptSync(transcript, video) {
       if (candidate) setActiveRow(candidate);
     });
   }
-
-  const setMode = (mode) => {
-    playMode = mode === 'all' ? 'all' : 'single';
-    if (playMode === 'all') clearSegment();
-  };
-
-  return { clearSegment, setMode };
 }
 
 function ensureRowVisible(row, container) {
@@ -227,28 +212,4 @@ function getNextRowTime(row, rows, duration) {
   }
   if (Number.isFinite(duration) && duration > 0) return duration;
   return null;
-}
-
-function insertTranscriptToolbar(transcriptColumn, controls) {
-  if (!transcriptColumn || !controls) return;
-  const toolbar = document.createElement('div');
-  toolbar.className = 'transcript-toolbar';
-  toolbar.innerHTML = `
-    <span class="toolbar-label">Chế độ phát: <strong id="play-mode-label">Phát câu đang chọn</strong></span>
-    <div class="toolbar-actions">
-      <button type="button" class="toolbar-btn active" data-mode="single">Phát câu đang chọn</button>
-      <button type="button" class="toolbar-btn" data-mode="all">Phát toàn bài</button>
-    </div>
-  `;
-  const label = toolbar.querySelector('#play-mode-label');
-  const buttons = Array.from(toolbar.querySelectorAll('.toolbar-btn'));
-  buttons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const mode = btn.dataset.mode === 'all' ? 'all' : 'single';
-      buttons.forEach((b) => b.classList.toggle('active', b === btn));
-      if (label) label.textContent = mode === 'all' ? 'Phát toàn bài' : 'Phát câu đang chọn';
-      controls.setMode(mode);
-    });
-  });
-  transcriptColumn.parentNode.insertBefore(toolbar, transcriptColumn);
 }
