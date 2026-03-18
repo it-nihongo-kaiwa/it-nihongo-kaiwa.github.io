@@ -298,7 +298,7 @@
         "tech": "React + TypeScript, Node.js, PostgreSQL, Stripe API, Docker",
         "phases": [
           "Pre Kick-off: 要件確認・見積り",
-          "Kick-off & 要件定義: チーム紹介・スコープ確認", 
+          "Kick-off & 要件定義: チーム紹介・スコープ確認",
           "基本設計: 画面設計・決済設計",
           "詳細設計: DDD・API仕様・ERD",
           "実装: コーディング規約・ブランチ運用",
@@ -319,7 +319,7 @@
               "path": "data/project2/0-1.md"
             },
             {
-              "id": "0-2", 
+              "id": "0-2",
               "title": "技術選定・アーキテクチャ検討",
               "content": "マイクロサービス vs モノリシック、決済システム選定、スケーラビリティ設計",
               "video": "技術選定・アーキテクチャ",
@@ -567,6 +567,63 @@
               "path": "data/project2/9-3.md"
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "title": "IT Talk - Host Meeting",
+      "description": "Họp và tổ chức cuộc họp với khách hàng Nhật - từ chuẩn bị đến theo dõi sau cuộc họp.",
+      "icon": "gi-video-camera",
+      "level": "Intermediate",
+      "summary": {
+        "scope": "Meeting Preparation, Conducting Meeting, Follow-up",
+        "duration": "Thực hành liên tục",
+        "team": "1:1 hoặc nhóm",
+        "features": [
+          "Chuẩn bị cuộc họp",
+          "Điều phối cuộc họp",
+          "Xử lý câu hỏi",
+          "Ghi chép và theo dõi",
+          "Email follow-up"
+        ],
+        "tech": "Kỹ năng mềm, Business Japanese",
+        "phases": [
+          "Chuẩn bị cuộc họp: Agenda, tài liệu, check tech",
+          "Mở cuộc họp: Chào hỏi, giới thiệu, đặt agenda",
+          "Tiến hành cuộc họp: Điều phối, Q&A, xử lý vấn đề",
+          "Kết thúc cuộc họp: Tóm tắt, next steps, cảm ơn",
+          "Sau cuộc họp: Email follow-up, biên bản họp"
+        ]
+      },
+      "groups": [
+        {
+          "group": "要件ヒアリング",
+          "items": [
+            {
+              "id": "1-1",
+              "title": "要件ヒアリングミーティング",
+              "content": "Thu thập yêu cầu từ khách hàng, clarify chi tiết",
+              "video": "要件ヒアリング",
+              "path": "data/project3/1-1.md"
+            }
+          ]
+        },
+        {
+          "group": "進捗報告",
+          "items": []
+        },
+        {
+          "group": "設計レビュー",
+          "items": []
+        },
+        {
+          "group": "テスト結果報告",
+          "items": []
+        },
+        {
+          "group": "リリース調整",
+          "items": []
         }
       ]
     }

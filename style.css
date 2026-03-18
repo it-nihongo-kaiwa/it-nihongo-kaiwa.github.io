@@ -946,11 +946,11 @@ a:hover { color: var(--gold-2); }
 
 .page-project .project-hero-card {
   display: grid;
-  grid-template-columns: minmax(168px, 220px) minmax(0, 1fr) 168px;
-  gap: 22px;
+  grid-template-columns: auto 1fr auto;
+  gap: 18px;
   align-items: center;
-  padding: 24px;
-  border-radius: 26px;
+  padding: 18px 22px;
+  border-radius: 20px;
   border: 1px solid rgba(255,255,255,0.08);
   background:
     radial-gradient(380px 220px at 0% 0%, rgba(246, 190, 32, 0.1), transparent 58%),
@@ -963,8 +963,9 @@ a:hover { color: var(--gold-2); }
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 164px;
-  border-radius: 22px;
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
   overflow: hidden;
   background:
     radial-gradient(120px 100px at 30% 30%, rgba(255,255,255,0.18), transparent 70%),
@@ -975,22 +976,22 @@ a:hover { color: var(--gold-2); }
 
 .page-project .project-hero-cover-glow {
   position: absolute;
-  inset: auto auto 18px 18px;
-  width: 120px;
-  height: 120px;
+  inset: auto auto -10px -10px;
+  width: 60px;
+  height: 60px;
   border-radius: 999px;
   background: radial-gradient(circle, rgba(246, 190, 32, 0.26), transparent 68%);
-  filter: blur(8px);
+  filter: blur(6px);
   pointer-events: none;
 }
 
 .page-project .project-hero-icon {
   position: relative;
   z-index: 1;
-  width: 104px;
-  height: 104px;
-  border-radius: 20px;
-  box-shadow: 0 12px 26px rgba(0,0,0,0.2);
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
 .page-project .project-hero-main {
@@ -1008,21 +1009,21 @@ a:hover { color: var(--gold-2); }
 
 .page-project .project-hero-pills {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .page-project .project-hero-pill {
   display: inline-flex;
   align-items: center;
-  min-height: 32px;
-  padding: 0 12px;
+  min-height: 24px;
+  padding: 0 10px;
   border-radius: 999px;
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.06);
   color: #c6d3ea;
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1035,10 +1036,10 @@ a:hover { color: var(--gold-2); }
 }
 
 .page-project .project-hero-title {
-  margin: 0 0 12px;
+  margin: 0 0 8px;
   color: #f7f9ff;
-  font-size: clamp(1.75rem, 3.1vw, 2.7rem);
-  line-height: 1.12;
+  font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+  line-height: 1.2;
   letter-spacing: 0.02em;
 }
 
@@ -1046,27 +1047,27 @@ a:hover { color: var(--gold-2); }
   margin: 0;
   max-width: 720px;
   color: #aebdd7;
-  font-size: 0.98rem;
-  line-height: 1.62;
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 
 .page-project .project-hero-meta {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .page-project .project-hero-meta-item {
   display: grid;
-  gap: 4px;
-  min-width: 140px;
-  padding: 11px 13px;
-  border-radius: 14px;
+  gap: 2px;
+  min-width: 100px;
+  padding: 7px 10px;
+  border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.05);
   color: #d9e1f1;
-  font-size: 0.92rem;
+  font-size: 0.8rem;
 }
 
 .page-project .project-hero-meta-item strong {
@@ -1079,9 +1080,9 @@ a:hover { color: var(--gold-2); }
 
 .page-project .project-hero-foot {
   display: grid;
-  gap: 14px;
-  margin-top: 16px;
-  padding-top: 16px;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 10px;
   border-top: 1px solid rgba(255,255,255,0.06);
 }
 
@@ -1110,13 +1111,13 @@ a:hover { color: var(--gold-2); }
 .page-project .project-feature-pill {
   display: inline-flex;
   align-items: center;
-  min-height: 31px;
-  padding: 0 11px;
+  min-height: 24px;
+  padding: 0 8px;
   border-radius: 999px;
   border: 1px solid rgba(255,255,255,0.07);
   background: rgba(255,255,255,0.045);
   color: #d7e2f7;
-  font-size: 0.84rem;
+  font-size: 0.74rem;
   font-weight: 500;
 }
 
@@ -1526,17 +1527,27 @@ a:hover { color: var(--gold-2); }
 
 @media (max-width: 720px) {
   .page-project .project-hero-card {
-    padding: 18px;
-    border-radius: 22px;
+    padding: 14px;
+    border-radius: 18px;
+    gap: 14px;
   }
 
   .page-project .project-hero-cover {
-    min-height: 150px;
+    width: 60px;
+    height: 60px;
   }
 
   .page-project .project-hero-icon {
-    width: 92px;
-    height: 92px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .page-project .project-hero-title {
+    font-size: 1.1rem;
+  }
+
+  .page-project .project-hero-description {
+    font-size: 0.8rem;
   }
 
   .page-project .project-stage-title {
@@ -3491,6 +3502,12 @@ body:not(.page-detail) .dialog-row.active .bubble .vn {
   background: #dbeafe;
   border-color: #3b82f6;
   color: #2563eb;
+}
+
+.project-icon.gi-video-camera {
+  background: #d1fae5;
+  border-color: #10b981;
+  color: #059669;
 }
 
 
